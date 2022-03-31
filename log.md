@@ -5,13 +5,13 @@
 ### Goals
 
 - [x] Init repo
-- [ ] Setup docker
-- [ ] Setup Prettier / Lint
-- [ ] Setup Express app
-- [ ] Setup Sentry
-- [ ] Setup Workflows
-- [ ] Setup Knex
-- [ ] Setup Jest
-- [ ] Setup Sequelize
+- [x] Setup docker
+- [x] Setup Prettier / Lint
+- [x] Setup Express app
+- [x] Setup Sentry
+- [x] Setup Workflows
+- [x] Setup Knex
+- [x] Setup Jest
+- [x] Setup Sequelize
 - [ ] Setup Firebase
 - [ ] Setup Google cloud
