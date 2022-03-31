@@ -32,9 +32,6 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Build routes
-        run: yarn build:routes
-
       - name: Run Jest
         run: yarn test:unit
         env:
