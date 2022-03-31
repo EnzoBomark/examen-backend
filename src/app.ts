@@ -6,6 +6,7 @@ import * as Tracing from '@sentry/tracing';
 
 import cors from 'cors';
 import express, { Express } from 'express';
+import { error, notFound } from './middleware';
 
 const origin = { origin: process.env.CLIENT_URL || '' };
 
@@ -35,5 +36,8 @@ app.use(express.urlencoded({ extended: false }));
 if (process.env.SENTRY_DSN) {
   app.use(Sentry.Handlers.errorHandler());
 }
+
+app.use(notFound);
+app.use(error);
 
 export default app;
