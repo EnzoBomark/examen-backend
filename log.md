@@ -1,8 +1,9 @@
-# Logbook 📘 
+# Logbook 📘
 
 ## 31 mars
 
 ### Goals
+
 - [x] Init repo
 - [ ] Setup docker
 - [ ] Setup Prettier / Lint
@@ -14,4 +15,3 @@
 - [ ] Setup Sequelize
 - [ ] Setup Firebase
 - [ ] Setup Google cloud
-
