@@ -7,6 +7,7 @@ import * as Tracing from '@sentry/tracing';
 import cors from 'cors';
 import express, { Express } from 'express';
 import { error, notFound } from './middleware';
+import routes from './routes';
 
 const origin = { origin: process.env.CLIENT_URL || '' };
 
@@ -32,6 +33,8 @@ app.get('/api/health', (_, res) => res.send({ message: 'OK' }));
 app.use(cors(origin));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use('/api', routes);
 
 if (process.env.SENTRY_DSN) {
   app.use(Sentry.Handlers.errorHandler());
