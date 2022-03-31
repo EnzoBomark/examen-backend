@@ -11,17 +11,20 @@ const origin = { origin: process.env.CLIENT_URL || '' };
 
 const app: Express = express();
 
-Sentry.init({
-  dsn: process.env.SENTRY_DSN || '',
-  integrations: [
-    new Sentry.Integrations.Http({ tracing: true }),
-    new Tracing.Integrations.Express({ app }),
-  ],
-  tracesSampleRate: 1.0,
-});
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
+      new Tracing.Integrations.Express({ app }),
+    ],
+    tracesSampleRate: 1.0,
+    environment: process.env.SENTRY_ENV || 'production',
+  });
 
-app.use(Sentry.Handlers.requestHandler());
-app.use(Sentry.Handlers.tracingHandler());
+  app.use(Sentry.Handlers.requestHandler());
+  app.use(Sentry.Handlers.tracingHandler());
+}
 
 app.get('/api/health', (_, res) => res.send({ message: 'OK' }));
 
@@ -29,6 +32,8 @@ app.use(cors(origin));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(Sentry.Handlers.errorHandler());
+if (process.env.SENTRY_DSN) {
+  app.use(Sentry.Handlers.errorHandler());
+}
 
 export default app;
