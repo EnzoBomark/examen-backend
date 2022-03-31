@@ -11,4 +11,6 @@ module.exports = {
       diagnostics: false,
     },
   },
+  setupFilesAfterEnv: ['jest-extended', '<rootDir>/tests/setup.ts'],
+  setupFiles: ['<rootDir>/tests/setup-env.ts'],
 };
