@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize';
 import { badImplementation } from '@hapi/boom';
 
 import { debug } from '../utils';
+import { associations, tables } from '../models';
 
 const dialectOptions =
   process.env.NODE_ENV === 'production'
@@ -21,6 +22,9 @@ const database = new Sequelize(process.env.DATABASE_URL || '', {
 export const connectToDatabase = async () => {
   try {
     await database.authenticate();
+
+    await tables.forEach((table) => table(database));
+    await associations.forEach((association) => association());
 
     debug('Connection has been established successfully.');
   } catch (error) {
