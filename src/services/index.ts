@@ -1,4 +1,4 @@
 import findOrFail from './find-or-fail';
+import chatExists from './chat-exists';
 
-// eslint-disable-next-line import/prefer-default-export
-export { findOrFail };
+export { findOrFail, chatExists };

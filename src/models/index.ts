@@ -18,13 +18,25 @@ import Center, {
   table as centerTable,
 } from './center.model';
 
-export { City, Country, User, Center };
+import Chat, {
+  associations as chatAssociations,
+  table as chatTable,
+} from './chat.model';
 
-export const tables = [countryTable, cityTable, userTable, centerTable];
+export { City, Country, User, Center, Chat };
+
+export const tables = [
+  countryTable,
+  cityTable,
+  userTable,
+  centerTable,
+  chatTable,
+];
 
 export const associations = [
   countryAssociations,
   cityAssociations,
   userAssociations,
   centerAssociations,
+  chatAssociations,
 ];
