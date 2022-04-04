@@ -19,7 +19,7 @@ describe('City controller test', () => {
     expect(response.statusCode).toBe(422);
   });
 
-  it('should fetch 25 first first cities', async () => {
+  it('should fetch 25 first cities', async () => {
     const response = await supertest(app)
       .get('/api/cities')
       .set('Authorization', 'Bearer token');

@@ -19,7 +19,7 @@ describe('Center controller test', () => {
     expect(response.statusCode).toBe(422);
   });
 
-  it('should fetch 25 first first centers', async () => {
+  it('should fetch 25 first centers', async () => {
     const response = await supertest(app)
       .get('/api/centers')
       .set('Authorization', 'Bearer token');
