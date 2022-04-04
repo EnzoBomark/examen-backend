@@ -1,7 +1,8 @@
 import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
-import { Country } from '.';
-import { BelongsTo } from '../types';
+import { User, Center, Country } from '.';
+import { UsersCities } from '../pivots';
+import { BelongsTo, BelongsToMany, HasMany } from '../types';
 import { uuid } from '../utils';
 
 interface Attributes {
@@ -16,7 +17,9 @@ class City
 
 interface City
   extends Attributes,
+    HasMany<'centers', Center>,
     BelongsTo<'country', Country>,
+    BelongsToMany<'users', User>,
     CreationDates {}
 
 export const table = async (sequelize: Sequelize) => {
@@ -40,6 +43,18 @@ export const associations = () => {
   City.belongsTo(Country, {
     foreignKey: 'countryId',
     as: 'country',
+  });
+
+  City.hasMany(Center, {
+    foreignKey: 'cityId',
+    onDelete: 'cascade',
+    as: 'centers',
+  });
+
+  City.belongsToMany(User, {
+    through: UsersCities,
+    foreignKey: 'cityId',
+    as: 'users',
   });
 };
 

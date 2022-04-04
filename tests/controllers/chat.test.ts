@@ -2,7 +2,18 @@ import supertest from 'supertest';
 import app from '../../src/app';
 
 describe('Chat controller test', () => {
-  it('should create chat when userIds is an array', async () => {
+  it('should create chat', async () => {
+    const response = await supertest(app)
+      .post('/api/chat')
+      .set('Authorization', 'Bearer token')
+      .send({
+        userIds: '3',
+      });
+
+    expect(response.statusCode).toBe(201);
+  });
+
+  it('should create not chat that already exits', async () => {
     const response = await supertest(app)
       .post('/api/chat')
       .set('Authorization', 'Bearer token')
@@ -10,18 +21,7 @@ describe('Chat controller test', () => {
         userIds: ['2', '3'],
       });
 
-    expect(response.statusCode).toBe(201);
-  });
-
-  it('should create chat when userIds is a string', async () => {
-    const response = await supertest(app)
-      .post('/api/chat')
-      .set('Authorization', 'Bearer token')
-      .send({
-        userIds: '2',
-      });
-
-    expect(response.statusCode).toBe(201);
+    expect(response.statusCode).toBe(409);
   });
 
   it('should not create chat when no users ar provided', async () => {
