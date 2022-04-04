@@ -4,15 +4,15 @@
 
 ### Goals
 
- - [x] Setup Firebase
- - [x] Auth
- - [x] Profile
- - [ ] Center
- - [ ] Match
- - [ ] Chat
- - [ ] Notification
- - [ ] Offer
- - [ ] Setup Google cloud
+- [x] Setup Firebase
+- [x] Auth
+- [x] Profile
+- [ ] Center
+- [ ] Match
+- [ ] Chat
+- [ ] Notification
+- [ ] Offer
+- [ ] Setup Google cloud
 
 ### commit
 
@@ -72,17 +72,17 @@ Date: Mon Apr 4 07:59:01 2022
 
 ### Goals
 
-  - [x] Init repo
-  - [x] Setup docker
-  - [x] Setup Prettier / Lint
-  - [x] Setup Express app
-  - [x] Setup Sentry
-  - [x] Setup Workflows
-  - [x] Setup Knex
-  - [x] Setup Jest
-  - [x] Setup Sequelize
-  - [ ] Setup Firebase
-  - [ ] Setup Google cloud
+- [x] Init repo
+- [x] Setup docker
+- [x] Setup Prettier / Lint
+- [x] Setup Express app
+- [x] Setup Sentry
+- [x] Setup Workflows
+- [x] Setup Knex
+- [x] Setup Jest
+- [x] Setup Sequelize
+- [ ] Setup Firebase
+- [ ] Setup Google cloud
 
 ### commit
 

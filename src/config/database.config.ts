@@ -3,6 +3,7 @@ import { badImplementation } from '@hapi/boom';
 
 import { debug } from '../utils';
 import { associations, tables } from '../models';
+import { pivots } from '../pivots';
 
 const dialectOptions =
   process.env.NODE_ENV === 'production'
@@ -24,6 +25,7 @@ export const connectToDatabase = async () => {
     await database.authenticate();
 
     await tables.forEach((table) => table(database));
+    await pivots.forEach((table) => table(database));
     await associations.forEach((association) => association());
 
     debug('Connection has been established successfully.');
