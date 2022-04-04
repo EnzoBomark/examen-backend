@@ -86,6 +86,7 @@ export const associations = () => {
   });
 
   Center.hasMany(Match, {
+    foreignKey: 'centerId',
     onDelete: 'cascade',
     as: 'matches',
   });

@@ -8,7 +8,7 @@ const getProfile = async (req: Req<auth>, res: Res<User>) => {
   const { auth } = req;
 
   try {
-    const profile = await findOrFail(User.findOne({ where: { id: auth.uid } }));
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
 
     return res.status(200).send(profile);
   } catch (err) {
@@ -42,7 +42,7 @@ const putProfile = async (
   const { auth, body } = req;
 
   try {
-    const profile = await findOrFail(User.findOne({ where: { id: auth.uid } }));
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
 
     await profile.update(
       pick(

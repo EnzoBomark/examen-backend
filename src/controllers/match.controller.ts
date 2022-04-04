@@ -8,7 +8,7 @@ const getMatch = async (req: Req<param>, res: Res<Match>) => {
   const { params } = req;
 
   try {
-    const match = await findOrFail(Match.findOne({ where: { id: params.id } }));
+    const match = await findOrFail(Match, { where: { id: params.id } });
 
     return res.status(200).send(match);
   } catch (err) {
@@ -23,13 +23,13 @@ const getMatches = async (
   const { query } = req;
 
   try {
-    const matches = await Match.findAll(
-      pagination(
-        {
-          where: clean({ id: query.matchIds }),
-        },
-        { page: query.page, pageSize: query.pageSize }
-      )
+    const matches = await pagination(
+      Match,
+      {
+        where: clean({ id: query.matchIds }),
+      },
+      query.page,
+      query.pageSize
     );
 
     return res.status(200).send(matches);
@@ -62,18 +62,16 @@ const postMatch = async (req: Req<auth, body<Match>>, res: Res<Match>) => {
         }
       );
 
-      const user = await findOrFail(User.findOne({ where: { id: auth.uid } }));
+      const user = await findOrFail(User, { where: { id: auth.uid } });
 
       await T.addUsers([user], {
         through: { position: '0', isAdmin: true },
         transaction,
       });
 
-      const center = await findOrFail(
-        Center.findOne({
-          where: { id: body.centerId },
-        })
-      );
+      const center = await findOrFail(Center, {
+        where: { id: body.centerId },
+      });
 
       await T.setCenter(center, { transaction });
 
@@ -97,14 +95,12 @@ const putMatch = async (
   const { params, body } = req;
 
   try {
-    const match = await findOrFail(Match.findOne({ where: { id: params.id } }));
+    const match = await findOrFail(Match, { where: { id: params.id } });
 
     if (body.centerId) {
-      const center = await findOrFail(
-        Center.findOne({
-          where: { id: body.centerId },
-        })
-      );
+      const center = await findOrFail(Center, {
+        where: { id: body.centerId },
+      });
 
       match.setCenter(center);
     }
@@ -136,7 +132,7 @@ const deleteMatch = async (req: Req<param>, res: Res<string>) => {
   const { params } = req;
 
   try {
-    const match = await findOrFail(Match.findOne({ where: { id: params.id } }));
+    const match = await findOrFail(Match, { where: { id: params.id } });
 
     await match.destroy();
 
