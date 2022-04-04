@@ -23,7 +23,12 @@ import Chat, {
   table as chatTable,
 } from './chat.model';
 
-export { City, Country, User, Center, Chat };
+import Match, {
+  associations as matchAssociations,
+  table as matchTable,
+} from './match.model';
+
+export { City, Country, User, Center, Chat, Match };
 
 export const tables = [
   countryTable,
@@ -31,6 +36,7 @@ export const tables = [
   userTable,
   centerTable,
   chatTable,
+  matchTable,
 ];
 
 export const associations = [
@@ -39,4 +45,5 @@ export const associations = [
   userAssociations,
   centerAssociations,
   chatAssociations,
+  matchAssociations,
 ];

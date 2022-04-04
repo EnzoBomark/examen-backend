@@ -30,7 +30,6 @@ export const throwError = (message: string, err: unknown) => {
 
   if ((err as Boom).output?.statusCode === 409) throw err;
   if ((err as Boom).output?.statusCode === 422) throw err;
-
   throw badData('Something went wrong, try again later');
 };
 

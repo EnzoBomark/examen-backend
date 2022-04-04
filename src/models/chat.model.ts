@@ -1,8 +1,8 @@
 import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
-import { User } from '.';
+import { User, Match } from '.';
 import { UsersChats } from '../pivots';
-import { BelongsToMany } from '../types';
+import { BelongsTo, BelongsToMany } from '../types';
 import { uuid } from '../utils';
 
 interface Attributes {
@@ -16,6 +16,7 @@ class Chat
 
 interface Chat
   extends Attributes,
+    BelongsTo<'match', Match>,
     BelongsToMany<'users', User>,
     CreationDates {}
 
@@ -34,6 +35,11 @@ export const table = async (sequelize: Sequelize) => {
 };
 
 export const associations = () => {
+  Chat.belongsTo(Match, {
+    foreignKey: 'matchId',
+    as: 'match',
+  });
+
   Chat.belongsToMany(User, {
     through: UsersChats,
     foreignKey: 'chatId',

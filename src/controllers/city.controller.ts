@@ -8,7 +8,7 @@ const getCity = async (req: Req<param>, res: Res<City>) => {
   const { params } = req;
 
   try {
-    const city = await findOrFail(City.findOne({ where: { id: params.id } }));
+    const city = await findOrFail(City, { where: { id: params.id } });
 
     return res.status(200).send(city);
   } catch (err) {
@@ -23,20 +23,20 @@ const getCities = async (
   const { query } = req;
 
   try {
-    const cities = await City.findAll(
-      pagination(
-        {
-          where: clean({ id: query.cityIds }),
-          include: [
-            {
-              model: Country,
-              as: 'country',
-              where: clean({ id: query.countryIds }),
-            },
-          ],
-        },
-        { page: query.page, pageSize: query.pageSize }
-      )
+    const cities = await pagination(
+      City,
+      {
+        where: clean({ id: query.cityIds }),
+        include: [
+          {
+            model: Country,
+            as: 'country',
+            where: clean({ id: query.countryIds }),
+          },
+        ],
+      },
+      query.page,
+      query.pageSize
     );
 
     return res.status(200).send(cities);
@@ -52,11 +52,9 @@ const postCity = async (req: Req<body<City>>, res: Res<City>) => {
     const city = await database.transaction(async (transaction) => {
       const T = await City.create(pick(body, 'name'), { transaction });
 
-      const country = await findOrFail(
-        Country.findOne({
-          where: { id: body.countryId },
-        })
-      );
+      const country = await findOrFail(Country, {
+        where: { id: body.countryId },
+      });
 
       await T.setCountry(country, { transaction });
 
@@ -76,18 +74,14 @@ const putCity = async (
   const { params, body } = req;
 
   try {
-    const city = await findOrFail(
-      City.findOne({
-        where: { id: params.id },
-      })
-    );
+    const city = await findOrFail(City, {
+      where: { id: params.id },
+    });
 
     if (body.countryId) {
-      const country = await findOrFail(
-        Country.findOne({
-          where: { id: body.countryId },
-        })
-      );
+      const country = await findOrFail(Country, {
+        where: { id: body.countryId },
+      });
 
       city.setCountry(country);
     }
@@ -104,7 +98,7 @@ const deleteCity = async (req: Req<param>, res: Res<string>) => {
   const { params } = req;
 
   try {
-    const city = await findOrFail(City.findOne({ where: { id: params.id } }));
+    const city = await findOrFail(City, { where: { id: params.id } });
 
     await city.destroy();
 

@@ -1,8 +1,8 @@
 import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
-import { City, User } from '.';
+import { City, User, Match } from '.';
 import { UsersCenters } from '../pivots';
-import { BelongsTo, BelongsToMany } from '../types';
+import { BelongsTo, BelongsToMany, HasMany } from '../types';
 import { uuid } from '../utils';
 
 interface Attributes {
@@ -23,6 +23,7 @@ interface Center
   extends Attributes,
     BelongsTo<'city', City>,
     BelongsToMany<'users', User>,
+    HasMany<'matches', Match>,
     CreationDates {}
 
 export const table = async (sequelize: Sequelize) => {
@@ -82,6 +83,12 @@ export const associations = () => {
     through: UsersCenters,
     foreignKey: 'centerId',
     as: 'users',
+  });
+
+  Center.hasMany(Match, {
+    foreignKey: 'centerId',
+    onDelete: 'cascade',
+    as: 'matches',
   });
 };
 

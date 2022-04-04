@@ -1,23 +1,15 @@
-import { FindOptions } from 'sequelize';
+import { FindOptions, Model, ModelStatic } from 'sequelize';
 
-const pagination = (
+const pagination = <T extends Model>(
+  model: ModelStatic<T>,
   query: FindOptions,
-  {
-    page = 0,
-    pageSize = 25,
-  }: {
-    page: number;
-    pageSize: number;
-  }
+  page = 0,
+  pageSize = 25
 ) => {
   const offset = Number(page) * Number(pageSize);
   const limit = Number(pageSize);
 
-  return {
-    ...query,
-    offset,
-    limit,
-  };
+  return model.findAll({ ...query, offset, limit });
 };
 
 export default pagination;

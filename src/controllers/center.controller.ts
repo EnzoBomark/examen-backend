@@ -8,11 +8,9 @@ const getCenter = async (req: Req<param>, res: Res<Center>) => {
   const { id } = req.params;
 
   try {
-    const center = await findOrFail(
-      Center.findOne({
-        where: { id },
-      })
-    );
+    const center = await findOrFail(Center, {
+      where: { id },
+    });
 
     return res.status(200).send(center);
   } catch (err) {
@@ -27,20 +25,20 @@ const getCenters = async (
   const { query } = req;
 
   try {
-    const centers = await Center.findAll(
-      pagination(
-        {
-          where: clean({ id: query.centerIds }),
-          include: [
-            {
-              model: City,
-              as: 'city',
-              where: clean({ id: query.cityIds }),
-            },
-          ],
-        },
-        { page: query.page, pageSize: query.pageSize }
-      )
+    const centers = await pagination(
+      Center,
+      {
+        where: clean({ id: query.centerIds }),
+        include: [
+          {
+            model: City,
+            as: 'city',
+            where: clean({ id: query.cityIds }),
+          },
+        ],
+      },
+      query.page,
+      query.pageSize
     );
 
     return res.status(200).send(centers);
@@ -59,9 +57,7 @@ const postCenter = async (req: Req<body<Center>>, res: Res<Center>) => {
         { transaction }
       );
 
-      const city = await findOrFail(
-        City.findOne({ where: { id: body.cityId } })
-      );
+      const city = await findOrFail(City, { where: { id: body.cityId } });
 
       await T.setCity(city, { transaction });
 
@@ -81,18 +77,14 @@ const putCenter = async (
   const { params, body } = req;
 
   try {
-    const center = await findOrFail(
-      Center.findOne({
-        where: { id: params.id },
-      })
-    );
+    const center = await findOrFail(Center, {
+      where: { id: params.id },
+    });
 
     if (body.cityId) {
-      const city = await findOrFail(
-        City.findOne({
-          where: { id: body.cityId },
-        })
-      );
+      const city = await findOrFail(City, {
+        where: { id: body.cityId },
+      });
 
       center.setCity(city);
     }
@@ -111,11 +103,9 @@ const deleteCenter = async (req: Req<param>, res: Res<string>) => {
   const { params } = req;
 
   try {
-    const center = await findOrFail(
-      Center.findOne({
-        where: { id: params.id },
-      })
-    );
+    const center = await findOrFail(Center, {
+      where: { id: params.id },
+    });
 
     await center.destroy();
 
