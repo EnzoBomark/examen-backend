@@ -12,7 +12,7 @@ export const throwError = (message: string, err: unknown) => {
     (err as Seq.ValidationError).errors.forEach((er) => {
       if (er.path) {
         errObj[er.path] = er.message
-          .replaceAll('.', ' ')
+          .replace(/\./g, ' ')
           .replace(/([A-Z])/g, ' $1')
           .toLowerCase()
           .trim();
