@@ -1,7 +1,6 @@
 import * as Seq from 'sequelize';
 import * as sentry from '@sentry/node';
 import { badData, badRequest, Boom } from '@hapi/boom';
-import { debug } from '../utils';
 
 export const throwError = (message: string, err: unknown) => {
   if (process.env.NODE_ENV === 'production') sentry.captureException(err);
@@ -30,8 +29,8 @@ export const throwError = (message: string, err: unknown) => {
   }
 
   if ((err as Boom).output?.statusCode === 409) throw err;
+  if ((err as Boom).output?.statusCode === 422) throw err;
 
-  debug((err as Error).message);
   throw badData('Something went wrong, try again later');
 };
 
