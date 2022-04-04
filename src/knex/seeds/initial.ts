@@ -3,9 +3,11 @@ import { Knex } from 'knex';
 /* eslint-disable import/prefer-default-export */
 export const seed = async (knex: Knex): Promise<void> => {
   await knex('users_centers').del();
+  await knex('users_chats').del();
   await knex('cities').del();
   await knex('countries').del();
   await knex('centers').del();
+  await knex('chats').del();
   await knex('users').del();
 
   await knex('countries').insert([
