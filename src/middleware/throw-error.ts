@@ -1,6 +1,6 @@
 import * as Seq from 'sequelize';
 import * as sentry from '@sentry/node';
-import { badData, badRequest } from '@hapi/boom';
+import { badData, badRequest, Boom } from '@hapi/boom';
 import { debug } from '../utils';
 
 export const throwError = (message: string, err: unknown) => {
@@ -27,10 +27,12 @@ export const throwError = (message: string, err: unknown) => {
     };
 
     throw error;
-  } else {
-    debug((err as Error).message);
-    throw badData('Something went wrong, try again later');
   }
+
+  if ((err as Boom).output?.statusCode === 409) throw err;
+
+  debug((err as Error).message);
+  throw badData('Something went wrong, try again later');
 };
 
 export default throwError;
