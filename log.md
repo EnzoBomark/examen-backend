@@ -7,14 +7,134 @@
 - [x] Setup Firebase
 - [x] Auth
 - [x] Profile
-- [ ] Center
-- [ ] Match
-- [ ] Chat
-- [ ] Notification
-- [ ] Offer
-- [ ] Setup Google cloud
+- [x] Center
+- [x] Match
+- [x] Chat
+- [ ] ~~Notification~~
+- [ ] ~~Offer~~
+- [ ] ~~Setup Google cloud~~
 
 ### commit
+
+commit c30a7d9c65ed89d330207266f5ccc840444250cd
+Merge: 754ff13 3b2eb1f
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 22:16:10 2022
+
+    Merge pull request #22 from EnzoBomark/feature/match
+
+    Feature/match
+
+commit 3b2eb1faf699b6b03aa5dff1af116638bd4b4862
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 22:14:05 2022
+
+    test: add missing match test
+
+commit 91ca262d847406032a0e195a26cbcf19c4fe5612
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 22:13:22 2022
+
+    refactor(*): move findAll and findOne in to util function with added functionality
+
+    example page and pageSize for findAll and findOrFail for findOne
+
+commit 0b00ba7ef4341e74a0f76a095b120376fe192415
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 22:10:52 2022
+
+    style: fix typo
+
+commit f488e609ee5412c9b9465e831fb93ca98c362559
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 21:16:04 2022
+
+    feat: add match model and match migrations
+
+commit 754ff13105813eb834e7119c94d9b37d8f47c8fa
+Merge: 98e1e1b b776590
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 21:13:23 2022
+
+    Merge pull request #21 from EnzoBomark/feature/associations
+
+    feat(*): add many to many associations
+
+commit b776590bedd9a722aff323bf5a984c5dcd830d32
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 21:09:55 2022
+
+    feat(*): add many to many associations
+
+commit 98e1e1b492c6ee2cc3cff512510430dad3c1d4a1
+Merge: 6cf7381 8bb37ca
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 13:26:18 2022
+
+    Merge pull request #20 from EnzoBomark/feature/chat
+
+    Feature/chat
+
+commit 8bb37caf988c76c72bccb0da402df285a6dfdfcc
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 13:24:17 2022
+
+    feat: add chat controller and routes
+
+commit f28f189db0440a1b2aaf2b15e661d5e7a0f81bda
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 13:23:54 2022
+
+    test: add chat test
+
+commit 5e83583eae8da274bef7a4869b7a48c07172ef0a
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 13:23:04 2022
+
+    feat: add chat model and chat migrations
+
+    this commit adds a chat model and pivot to users
+
+commit 6cf7381f0f2eb60822f8bc4506352bf846d684d1
+Merge: d715535 4b76eb6
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 12:41:52 2022
+
+    Merge pull request #19 from EnzoBomark/feature/centers
+
+    Add centers
+
+commit 4b76eb6713986e7f49766ff604d889f1bad36afc
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 12:40:18 2022
+
+    fix: linting
+
+commit b6e1c1ac7473224fceec3f8ca70233f4160edbd2
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 12:37:01 2022
+
+    feat: add center controller and routes
+
+commit 4bb37ee62218f5d57615d513961c3c4603b474eb
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 12:36:35 2022
+
+    test: add center crud tests
+
+commit 67d772b0a8f45acaea7158d349cc39b8a629518f
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 12:35:34 2022
+
+    feat: add center model and center migration
+
+    this commit adds the model for centers and the pivot between centers and users
+
+commit d715535863632ea759fca8a1471d0b463fd5e199
+Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
+Date: Mon Apr 4 11:24:40 2022
+
+    update log.md
 
 commit 6420babaa08b8d2a3509137c8eccf1d1cf5ad876
 Merge: a399801 dc42ae3
@@ -29,7 +149,7 @@ commit dc42ae38572118ca9306f98d6ce8befeada8d731
 Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
 Date: Mon Apr 4 11:02:35 2022
 
-    fix(throw-error): update replaceAll with replace
+    fix(throw-error): update replaceAll with repace
 
 commit 57f96c9e46294812b43e1d7c56bb37d0f6b345e3
 Author: Enzo Bomark <71819938+EnzoBomark@users.noreply.github.com>
@@ -57,7 +177,7 @@ Date: Mon Apr 4 08:57:42 2022
 
     feat(*): add firebase auth connection
 
-    This commit adds a decode token middleware to decode incoming request tokens, It is used for applying
+    This commit adds a decode token middleware to decode incoming request tokens, It is used for appying
     the right user id to the express request object with the uid key.
 
     BREAKING CHANGE: Requests now require a valid token
