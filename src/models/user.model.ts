@@ -1,6 +1,14 @@
 import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
 import { uuid } from '../utils';
+import { Center, City, Chat } from '.';
+import { BelongsToMany } from '../types';
+import {
+  UsersCenters,
+  UsersChats,
+  UsersCities,
+  UsersUsers,
+} from '../pivots';
 
 interface Attributes {
   id: string;
@@ -18,7 +26,14 @@ class User
   extends Model<Attributes, Optional<Attributes, 'id'>>
   implements Attributes {}
 
-interface User extends Attributes, CreationDates {}
+interface User
+  extends Attributes,
+    BelongsToMany<'followings', User>,
+    BelongsToMany<'followers', User>,
+    BelongsToMany<'centers', Center>,
+    BelongsToMany<'cities', City>,
+    BelongsToMany<'chats', Chat>,
+    CreationDates {}
 
 export const table = async (sequelize: Sequelize) => {
   await User.init(
@@ -75,6 +90,36 @@ export const table = async (sequelize: Sequelize) => {
   );
 };
 
-export const associations = () => null;
+export const associations = () => {
+  User.belongsToMany(User, {
+    through: UsersUsers,
+    foreignKey: 'userId',
+    as: 'followings',
+  });
+
+  User.belongsToMany(User, {
+    through: UsersUsers,
+    foreignKey: 'followId',
+    as: 'followers',
+  });
+
+  User.belongsToMany(Center, {
+    through: UsersCenters,
+    foreignKey: 'userId',
+    as: 'centers',
+  });
+
+  User.belongsToMany(City, {
+    through: UsersCities,
+    foreignKey: 'userId',
+    as: 'cities',
+  });
+
+  User.belongsToMany(Chat, {
+    through: UsersChats,
+    foreignKey: 'userId',
+    as: 'chats',
+  });
+};
 
 export default User;
