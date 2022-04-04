@@ -2,6 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Express, Request, Response } from 'express';
 
+interface Auth {
+  uid: string;
+  email?: string;
+  picture?: string;
+}
+
 interface Pagination {
   page: number;
   pageSize: number;
@@ -12,6 +18,19 @@ interface ParamId {
 }
 
 declare global {
+  namespace Express {
+    interface Request {
+      auth: Auth;
+    }
+    interface Response {
+      auth: Auth;
+    }
+  }
+
+  interface auth {
+    auth: Auth;
+  }
+
   interface body<Body> {
     body: Body;
   }
@@ -34,7 +53,7 @@ declare global {
 
   type Ids = string[] | string;
 
-  type Empty = param<never> | query<never> | body<never>;
+  type Empty = param<never> | query<never> | body<never> | auth;
 
   type Req<T = Empty, G = Empty, H = Empty, J = Empty> = T & G & H & J;
 }

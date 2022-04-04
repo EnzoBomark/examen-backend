@@ -8,8 +8,17 @@ import Country, {
   table as countryTable,
 } from './country.model';
 
-export { City, Country };
+import User, {
+  associations as userAssociations,
+  table as userTable,
+} from './user.model';
 
-export const tables = [countryTable, cityTable];
+export { City, Country, User };
 
-export const associations = [countryAssociations, cityAssociations];
+export const tables = [countryTable, cityTable, userTable];
+
+export const associations = [
+  countryAssociations,
+  cityAssociations,
+  userAssociations,
+];
