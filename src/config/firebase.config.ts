@@ -1,16 +1,20 @@
-import * as admin from 'firebase-admin';
+import * as firebase from 'firebase-admin';
+import { parsable } from '../utils';
 
-const rootParams = Buffer.from(
+// root firebase params
+const rp = Buffer.from(
   process.env.FIREBASE_SERVICE_BASE64 || '',
   'base64'
-);
+).toString();
 
-const root = admin.initializeApp(
-  {
-    credential: admin.credential.cert(JSON.parse(rootParams.toString())),
-    databaseURL: process.env.FIREBASE_DATABASE,
-  },
-  'root'
-);
+const root = parsable(rp)
+  ? firebase.initializeApp(
+      {
+        credential: firebase.credential.cert(JSON.parse(rp)),
+        databaseURL: process.env.FIREBASE_DATABASE,
+      },
+      'root'
+    )
+  : ({} as firebase.app.App);
 
 export default { root };
