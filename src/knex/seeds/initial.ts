@@ -2,8 +2,10 @@ import { Knex } from 'knex';
 
 /* eslint-disable import/prefer-default-export */
 export const seed = async (knex: Knex): Promise<void> => {
+  await knex('users_centers').del();
   await knex('cities').del();
   await knex('countries').del();
+  await knex('centers').del();
   await knex('users').del();
 
   await knex('countries').insert([
@@ -40,6 +42,29 @@ export const seed = async (knex: Knex): Promise<void> => {
       id: '60a79600-cc01-4ae4-9ebe-89a7da95c23d',
       name: 'Helsingfors',
       country_id: 'ad7151aa-618b-401d-b822-731e668b3455',
+    },
+  ]);
+
+  await knex('centers').insert([
+    {
+      id: 'e9988682-3539-4d37-a620-93056126b9cd',
+      name: 'Stockholm Tennis Center',
+      picture:
+        'https://images.unsplash.com/photo-1613870930431-a09c7139eb33?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGFkZWx8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60',
+      address: 'example 00',
+      contact_url: 'https://example.se',
+      booking_url: 'https://example.se',
+      city_id: 'fe59bd04-1abb-4734-8592-e9bb7016a2c8',
+    },
+    {
+      id: 'd367b332-fe6d-4a06-a9f9-fb5c68b4e5c8',
+      name: 'Oslo Tennis Center',
+      picture:
+        'https://images.unsplash.com/photo-1613870930431-a09c7139eb33?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGFkZWx8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60',
+      address: 'example 00',
+      contact_url: 'https://example.se',
+      booking_url: 'https://example.se',
+      city_id: '16b187e8-a950-49d6-8142-91c3f2c255e8',
     },
   ]);
 
@@ -86,6 +111,17 @@ export const seed = async (knex: Knex): Promise<void> => {
       description: 'My name is Greta',
       skill: '3',
       is_right_hand: false,
+    },
+  ]);
+
+  await knex('users_centers').insert([
+    {
+      user_id: '1',
+      center_id: 'e9988682-3539-4d37-a620-93056126b9cd',
+    },
+    {
+      user_id: '1',
+      center_id: 'd367b332-fe6d-4a06-a9f9-fb5c68b4e5c8',
     },
   ]);
 };
