@@ -1,12 +1,13 @@
 import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
 import { uuid } from '../utils';
-import { Center, City, Chat } from '.';
+import { Center, City, Match, Chat } from '.';
 import { BelongsToMany } from '../types';
 import {
   UsersCenters,
   UsersChats,
   UsersCities,
+  UsersMatches,
   UsersUsers,
 } from '../pivots';
 
@@ -32,6 +33,7 @@ interface User
     BelongsToMany<'followers', User>,
     BelongsToMany<'centers', Center>,
     BelongsToMany<'cities', City>,
+    BelongsToMany<'matches', Match>,
     BelongsToMany<'chats', Chat>,
     CreationDates {}
 
@@ -113,6 +115,12 @@ export const associations = () => {
     through: UsersCities,
     foreignKey: 'userId',
     as: 'cities',
+  });
+
+  User.belongsToMany(Match, {
+    through: UsersMatches,
+    foreignKey: 'userId',
+    as: 'matches',
   });
 
   User.belongsToMany(Chat, {
