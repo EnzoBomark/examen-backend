@@ -2,16 +2,15 @@ import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
 import { uuid } from '../utils';
 import { User, Center, Chat } from '.';
-import { UsersMatches } from '../pivots';
+import { usersMatches } from '../pivots';
 import { BelongsTo, BelongsToMany, HasOne } from '../types';
 
 interface Attributes {
   id: string;
   dateTime: string;
   type: 'single' | 'double';
-  duration?: '60' | '90' | '120';
+  duration: '60' | '90' | '120';
   currency: 'SEK' | 'EUR';
-  skill?: '0' | '1' | '2' | '3' | '4' | '5';
   court?: string;
   price?: number;
   phone?: number;
@@ -46,7 +45,7 @@ export const table = async (sequelize: Sequelize) => {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          isNumeric: true,
+          notEmpty: true,
         },
       },
       court: {
@@ -89,11 +88,6 @@ export const table = async (sequelize: Sequelize) => {
           notEmpty: true,
         },
       },
-      skill: {
-        allowNull: true,
-        type: DataTypes.ENUM,
-        values: ['0', '1', '2', '3', '4', '5'],
-      },
       isPublic: {
         allowNull: false,
         defaultValue: false,
@@ -127,7 +121,7 @@ export const associations = () => {
   });
 
   Match.belongsToMany(User, {
-    through: UsersMatches,
+    through: usersMatches,
     foreignKey: 'matchId',
     as: 'users',
   });

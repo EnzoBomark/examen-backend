@@ -1,7 +1,7 @@
 import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
 import { User, Center, Country } from '.';
-import { UsersCities } from '../pivots';
+import { usersCities } from '../pivots';
 import { BelongsTo, BelongsToMany, HasMany } from '../types';
 import { uuid } from '../utils';
 
@@ -52,7 +52,7 @@ export const associations = () => {
   });
 
   City.belongsToMany(User, {
-    through: UsersCities,
+    through: usersCities,
     foreignKey: 'cityId',
     as: 'users',
   });

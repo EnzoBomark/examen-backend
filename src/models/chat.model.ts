@@ -1,7 +1,7 @@
 import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
 import { User, Match } from '.';
-import { UsersChats } from '../pivots';
+import { usersChats } from '../pivots';
 import { BelongsTo, BelongsToMany } from '../types';
 import { uuid } from '../utils';
 
@@ -41,7 +41,7 @@ export const associations = () => {
   });
 
   Chat.belongsToMany(User, {
-    through: UsersChats,
+    through: usersChats,
     foreignKey: 'chatId',
     as: 'users',
   });

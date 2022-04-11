@@ -1,9 +1,9 @@
 import { Model, Sequelize } from 'sequelize';
 
-class UsersCities extends Model<CreationDates> {}
+class usersCities extends Model<CreationDates> {}
 
 export const usersCitiesTable = async (sequelize: Sequelize) => {
-  await UsersCities.init({}, { sequelize, underscored: true });
+  await usersCities.init({}, { sequelize, underscored: true });
 };
 
-export default UsersCities;
+export default usersCities;

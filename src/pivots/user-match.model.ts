@@ -5,12 +5,12 @@ interface Attributes {
   position: '0' | '1' | '2' | '3';
 }
 
-class UsersMatches extends Model<Attributes> implements Attributes {}
+class usersMatches extends Model<Attributes> implements Attributes {}
 
-interface UsersMatches extends Attributes, CreationDates {}
+interface usersMatches extends Attributes, CreationDates {}
 
 export const usersMatchesTable = async (sequelize: Sequelize) => {
-  await UsersMatches.init(
+  await usersMatches.init(
     {
       position: {
         allowNull: false,
@@ -27,4 +27,4 @@ export const usersMatchesTable = async (sequelize: Sequelize) => {
   );
 };
 
-export default UsersMatches;
+export default usersMatches;

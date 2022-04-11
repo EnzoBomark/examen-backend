@@ -4,11 +4,11 @@ import { uuid } from '../utils';
 import { Center, City, Match, Chat } from '.';
 import { BelongsToMany } from '../types';
 import {
-  UsersCenters,
-  UsersChats,
-  UsersCities,
-  UsersMatches,
-  UsersUsers,
+  usersCenters,
+  usersChats,
+  usersCities,
+  usersMatches,
+  usersUsers,
 } from '../pivots';
 
 interface Attributes {
@@ -94,37 +94,37 @@ export const table = async (sequelize: Sequelize) => {
 
 export const associations = () => {
   User.belongsToMany(User, {
-    through: UsersUsers,
+    through: usersUsers,
     foreignKey: 'userId',
     as: 'followings',
   });
 
   User.belongsToMany(User, {
-    through: UsersUsers,
+    through: usersUsers,
     foreignKey: 'followId',
     as: 'followers',
   });
 
   User.belongsToMany(Center, {
-    through: UsersCenters,
+    through: usersCenters,
     foreignKey: 'userId',
     as: 'centers',
   });
 
   User.belongsToMany(City, {
-    through: UsersCities,
+    through: usersCities,
     foreignKey: 'userId',
     as: 'cities',
   });
 
   User.belongsToMany(Match, {
-    through: UsersMatches,
+    through: usersMatches,
     foreignKey: 'userId',
     as: 'matches',
   });
 
   User.belongsToMany(Chat, {
-    through: UsersChats,
+    through: usersChats,
     foreignKey: 'userId',
     as: 'chats',
   });
