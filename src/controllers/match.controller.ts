@@ -8,7 +8,10 @@ const getMatch = async (req: Req<param>, res: Res<Match>) => {
   const { params } = req;
 
   try {
-    const match = await findOrFail(Match, { where: { id: params.id } });
+    const match = await findOrFail(Match, {
+      where: { id: params.id },
+      include: { all: true },
+    });
 
     return res.status(200).send(match);
   } catch (err) {
@@ -27,6 +30,7 @@ const getMatches = async (
       Match,
       {
         where: clean({ id: query.matchIds }),
+        include: { all: true },
       },
       query.page,
       query.pageSize
@@ -42,7 +46,7 @@ const postMatch = async (req: Req<auth, body<Match>>, res: Res<Match>) => {
   const { auth, body } = req;
 
   try {
-    const match = await database.transaction(async (transaction) => {
+    const instance = await database.transaction(async (transaction) => {
       const T = await Match.create(
         pick(
           body,
@@ -52,12 +56,12 @@ const postMatch = async (req: Req<auth, body<Match>>, res: Res<Match>) => {
           'duration',
           'currency',
           'price',
-          'skill',
           'phone',
           'isPublic',
           'isBooked'
         ),
         {
+          include: { all: true },
           transaction,
         }
       );
@@ -82,6 +86,11 @@ const postMatch = async (req: Req<auth, body<Match>>, res: Res<Match>) => {
       return T;
     });
 
+    const match = await findOrFail(Match, {
+      where: { id: instance.getDataValue('id') },
+      include: { all: true },
+    });
+
     return res.status(201).send(match);
   } catch (err) {
     return throwError('Cannot create match', err);
@@ -100,6 +109,7 @@ const putMatch = async (
     if (body.centerId) {
       const center = await findOrFail(Center, {
         where: { id: body.centerId },
+        include: { all: true },
       });
 
       match.setCenter(center);
@@ -113,7 +123,6 @@ const putMatch = async (
         'duration',
         'currency',
         'price',
-        'skill',
         'phone',
         'result',
         'isPlayed',
