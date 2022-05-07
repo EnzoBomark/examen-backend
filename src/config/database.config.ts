@@ -17,7 +17,7 @@ const dialectOptions =
 
 const database = new Sequelize(process.env.DATABASE_URL || '', {
   dialectOptions,
-  logging: false,
+  logging: true,
 });
 
 export const connectToDatabase = async () => {

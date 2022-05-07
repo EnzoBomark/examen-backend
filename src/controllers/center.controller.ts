@@ -29,13 +29,7 @@ const getCenters = async (
       Center,
       {
         where: clean({ id: query.centerIds }),
-        include: [
-          {
-            model: City,
-            as: 'city',
-            where: clean({ id: query.cityIds }),
-          },
-        ],
+        include: { all: true },
       },
       query.page,
       query.pageSize
