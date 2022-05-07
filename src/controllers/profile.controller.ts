@@ -3,7 +3,7 @@ import firebase from '../firebase';
 import { throwError } from '../middleware';
 import { Chat, User } from '../models';
 import { cloudMessage, findOrFail } from '../services';
-import { association, pick } from '../utils';
+import { association, pick, prod } from '../utils';
 
 const getProfile = async (req: Req<auth>, res: Res<User>) => {
   const { auth } = req;
@@ -51,15 +51,6 @@ const getProfileChats = async (
 
     const chatsWithMessages = await Promise.all(
       chats.map(async (chat) => {
-        const messagesRef = firebase.root
-          .database()
-          .ref(`/chat_rooms/${chat.getDataValue('id')}`);
-
-        const messagesSnapShot = await messagesRef
-          .orderByKey()
-          .limitToLast(1)
-          .once('value');
-
         const messages: {
           key: string | null;
           uid: string;
@@ -67,27 +58,37 @@ const getProfileChats = async (
           time: string;
         }[] = [];
 
-        messagesSnapShot.forEach((message) => {
-          messages.push({
-            key: message.key,
-            uid: message.val().uid,
-            message: message.val().message,
-            time: message.val().time,
-          });
-        });
-
-        const statusRef = firebase.root
-          .database()
-          .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
-
-        const statusSnapShot = await statusRef.once('value');
-
         const readStatus: { id: string; isRead: boolean }[] = [];
+        await prod(async () => {
+          const messagesRef = firebase.root
+            .database()
+            .ref(`/chat_rooms/${chat.getDataValue('id')}`);
 
-        statusSnapShot.forEach((status) => {
-          readStatus.push({
-            id: status.val().uid,
-            isRead: status.val().is_read,
+          const messagesSnapShot = await messagesRef
+            .orderByKey()
+            .limitToLast(1)
+            .once('value');
+
+          messagesSnapShot.forEach((message) => {
+            messages.push({
+              key: message.key,
+              uid: message.val().uid,
+              message: message.val().message,
+              time: message.val().time,
+            });
+          });
+
+          const statusRef = firebase.root
+            .database()
+            .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
+
+          const statusSnapShot = await statusRef.once('value');
+
+          statusSnapShot.forEach((status) => {
+            readStatus.push({
+              id: status.val().uid,
+              isRead: status.val().is_read,
+            });
           });
         });
 
