@@ -1,6 +1,6 @@
 import { Center, Chat, Match, User } from '../models';
 import { throwError } from '../middleware';
-import { clean, pagination, pick } from '../utils';
+import { clean, pagination, pick, prod } from '../utils';
 import { findOrFail } from '../services';
 import database from '../database';
 import firebase from '../firebase';
@@ -82,13 +82,15 @@ const postMatch = async (req: Req<auth, body<Match>>, res: Res<Match>) => {
 
       const chat = await Chat.create({ type: 'match' }, { transaction });
 
-      const statusRef = firebase.root
-        .database()
-        .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
+      await prod(async () => {
+        const statusRef = firebase.root
+          .database()
+          .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
 
-      await statusRef.push().set({
-        uid: user.getDataValue('id'),
-        is_read: false,
+        await statusRef.push().set({
+          uid: user.getDataValue('id'),
+          is_read: false,
+        });
       });
 
       await T.setChat(chat, { transaction });

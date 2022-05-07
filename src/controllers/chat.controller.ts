@@ -4,6 +4,7 @@ import { chatExists } from '../services';
 import { throwError } from '../middleware';
 import database from '../database';
 import firebase from '../firebase';
+import { prod } from '../utils';
 
 const postChat = async (
   req: Req<auth, body<{ userIds: ReadonlyArray<string> | string }>>,
@@ -26,18 +27,20 @@ const postChat = async (
         { include: [{ model: User, as: 'users' }], transaction }
       );
 
-      const statusRef = firebase.root
-        .database()
-        .ref(`/chat_rooms_status/${T.getDataValue('id')}`);
+      await prod(async () => {
+        const statusRef = firebase.root
+          .database()
+          .ref(`/chat_rooms_status/${T.getDataValue('id')}`);
 
-      await Promise.all(
-        users.map((user) => {
-          return statusRef.push().set({
-            uid: user.id,
-            is_read: false,
-          });
-        })
-      );
+        await Promise.all(
+          users.map((user) => {
+            return statusRef.push().set({
+              uid: user.id,
+              is_read: false,
+            });
+          })
+        );
+      });
 
       await T.addUsers(users, { transaction });
 
