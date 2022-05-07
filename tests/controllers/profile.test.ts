@@ -82,4 +82,39 @@ describe('Profile controller test', () => {
     expect(response.body.name).toBe('Enzo');
     expect(response.body.skill).toBe('5');
   });
+
+  it('should get chats from Enzo', async () => {
+    const response = await supertest(app)
+      .get('/api/profile/chats')
+      .set('Authorization', 'Bearer token');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveLength(4);
+  });
+
+  it('should get followings from Enzo', async () => {
+    const response = await supertest(app)
+      .get('/api/profile/followings')
+      .set('Authorization', 'Bearer token');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveLength(2);
+  });
+
+  it('should get followers from Enzo', async () => {
+    const response = await supertest(app)
+      .get('/api/profile/followers')
+      .set('Authorization', 'Bearer token');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveLength(1);
+  });
+
+  it('should make Enzo follow Jane', async () => {
+    const response = await supertest(app)
+      .put('/api/profile/follow/2')
+      .set('Authorization', 'Bearer token');
+
+    expect(response.statusCode).toBe(200);
+  });
 });

@@ -4,6 +4,7 @@ import profile from './profile.controller';
 import center from './center.controller';
 import chat from './chat.controller';
 import match from './match.controller';
+import user from './user.controller';
 
 const controllers = {
   ...country,
@@ -12,6 +13,7 @@ const controllers = {
   ...center,
   ...chat,
   ...match,
+  ...user,
 };
 
 export default controllers;

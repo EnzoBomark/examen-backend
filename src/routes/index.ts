@@ -7,6 +7,7 @@ import center from './center.routes';
 import profile from './profile.routes';
 import chat from './chat.routes';
 import match from './match.routes';
+import user from './user.routes';
 
 const routes = Router();
 
@@ -17,5 +18,6 @@ routes.use(center);
 routes.use(profile);
 routes.use(chat);
 routes.use(match);
+routes.use(user);
 
 export default routes;

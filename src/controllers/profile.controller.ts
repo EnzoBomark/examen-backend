@@ -2,7 +2,7 @@ import { conflict } from '@hapi/boom';
 import firebase from '../firebase';
 import { throwError } from '../middleware';
 import { Chat, User } from '../models';
-import { findOrFail } from '../services';
+import { cloudMessage, findOrFail } from '../services';
 import { association, pick } from '../utils';
 
 const getProfile = async (req: Req<auth>, res: Res<User>) => {
@@ -105,6 +105,44 @@ const getProfileChats = async (
   }
 };
 
+const getProfileFollows = async (
+  req: Req<auth, query>,
+  res: Res<ReadonlyArray<User>>
+) => {
+  const { auth, query } = req;
+
+  try {
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+
+    const follows = await profile.getFollowings(
+      association({ include: [{ all: true }] }, query.page, query.pageSize)
+    );
+
+    return res.status(200).send(follows);
+  } catch (err) {
+    return throwError('Cannot get profile followings', err);
+  }
+};
+
+const getProfileFollowers = async (
+  req: Req<auth, query>,
+  res: Res<ReadonlyArray<User>>
+) => {
+  const { auth, query } = req;
+
+  try {
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+
+    const followers = await profile.getFollowers(
+      association({ include: [{ all: true }] }, query.page, query.pageSize)
+    );
+
+    return res.status(200).send(followers);
+  } catch (err) {
+    return throwError('Cannot get profile followers', err);
+  }
+};
+
 const postProfile = async (req: Req<auth, body<User>>, res: Res<User>) => {
   const { auth, body } = req;
 
@@ -192,12 +230,44 @@ const putProfileChat = async (req: Req<auth, param>, res: Res<Chat>) => {
   }
 };
 
+const putProfileFollow = async (req: Req<auth, param>, res: Res<User>) => {
+  const { auth, params } = req;
+
+  try {
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+    const followee = await findOrFail(User, { where: { id: params.id } });
+
+    const isRelationExisting = await profile.hasFollowings([followee]);
+
+    if (!isRelationExisting) {
+      await profile.addFollowings([followee]);
+
+      await cloudMessage.sendToUser(
+        followee,
+        'New follower!',
+        `${profile.getDataValue('name')} started following you`
+      );
+    }
+
+    if (isRelationExisting) {
+      await profile.removeFollowings([followee]);
+    }
+
+    return res.status(200).send(profile);
+  } catch (err) {
+    return throwError('Cannot update profile follow', err);
+  }
+};
+
 const user = {
   getProfile,
   getProfileChats,
+  getProfileFollows,
+  getProfileFollowers,
   postProfile,
   putProfile,
   putProfileChat,
+  putProfileFollow,
 };
 
 export default user;
