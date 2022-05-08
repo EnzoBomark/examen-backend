@@ -93,12 +93,14 @@ export const table = async (sequelize: Sequelize) => {
 };
 
 export const associations = () => {
+  // Those who the user follows
   User.belongsToMany(User, {
     through: usersUsers,
     foreignKey: 'userId',
     as: 'followings',
   });
 
+  // Those who follows the user
   User.belongsToMany(User, {
     through: usersUsers,
     foreignKey: 'followId',

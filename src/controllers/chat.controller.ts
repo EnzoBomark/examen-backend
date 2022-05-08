@@ -4,7 +4,6 @@ import { chatExists, findOrFail } from '../services';
 import { throwError } from '../middleware';
 import database from '../database';
 import firebase from '../firebase';
-import { prod } from '../utils';
 import { ChatWithMessages } from '../models/chat.model';
 
 const postChat = async (
@@ -28,7 +27,7 @@ const postChat = async (
         { include: [{ model: User, as: 'users' }], transaction }
       );
 
-      await prod(async () => {
+      if (process.env.NODE_ENV !== 'test') {
         const statusRef = firebase.root
           .database()
           .ref(`/chat_rooms_status/${T.getDataValue('id')}`);
@@ -41,7 +40,7 @@ const postChat = async (
             });
           })
         );
-      });
+      }
 
       await T.addUsers(users, { transaction });
 
@@ -57,7 +56,7 @@ const postChat = async (
 
     const readStatus: { id: string; isRead: boolean }[] = [];
 
-    await prod(async () => {
+    if (process.env.NODE_ENV !== 'test') {
       const messagesRef = firebase.root
         .database()
         .ref(`/chat_rooms/${chat.getDataValue('id')}`);
@@ -88,7 +87,7 @@ const postChat = async (
           isRead: status.val().is_read,
         });
       });
-    });
+    }
 
     const chatWithMessages = await findOrFail(Chat, {
       where: { id: chat.id },

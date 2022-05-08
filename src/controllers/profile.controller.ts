@@ -4,7 +4,7 @@ import { throwError } from '../middleware';
 import { Chat, User } from '../models';
 import { ChatWithMessages } from '../models/chat.model';
 import { cloudMessage, findOrFail } from '../services';
-import { association, pick, prod } from '../utils';
+import { association, pick } from '../utils';
 
 const getProfile = async (req: Req<auth>, res: Res<User>) => {
   const { auth } = req;
@@ -22,13 +22,13 @@ const getProfileChats = async (
   req: Req<auth, query>,
   res: Res<ChatWithMessages[]>
 ) => {
-  const { auth, query } = req;
+  const { auth } = req;
 
   try {
     const profile = await findOrFail(User, { where: { id: auth.uid } });
 
     const chats = await profile.getChats(
-      association({ include: [{ all: true }] }, query.page, query.pageSize)
+      association({ include: [{ all: true }] })
     );
 
     const chatsWithMessages = await Promise.all(
@@ -42,7 +42,7 @@ const getProfileChats = async (
 
         const readStatus: { id: string; isRead: boolean }[] = [];
 
-        await prod(async () => {
+        if (process.env.NODE_ENV !== 'test') {
           const messagesRef = firebase.root
             .database()
             .ref(`/chat_rooms/${chat.getDataValue('id')}`);
@@ -73,7 +73,7 @@ const getProfileChats = async (
               isRead: status.val().is_read,
             });
           });
-        });
+        }
 
         return {
           ...chat.toJSON(),
@@ -237,7 +237,7 @@ const putProfileFollow = async (req: Req<auth, param>, res: Res<User>) => {
       await profile.removeFollowings([followee]);
     }
 
-    return res.status(200).send(profile);
+    return res.status(200).send(followee);
   } catch (err) {
     return throwError('Cannot update profile follow', err);
   }

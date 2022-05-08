@@ -46,6 +46,12 @@ const getUsers = async (
             required: false,
             where: clean({ id: query.cityIds }),
           },
+          {
+            as: 'followers',
+            model: User,
+            required: false,
+            where: clean({ id: auth.uid }),
+          },
         ],
       },
       query.page,

@@ -10,7 +10,7 @@ const chatExists = async (users: User[]) => {
     FROM chats c
     INNER JOIN users_chats pivot ON c.id = pivot.chat_id
     where type = :type
-    AND pivot.user_id IN(:users)
+    AND pivot.user_id IN (:users)
     AND (
       SELECT COUNT(pivot_2.chat_id)
       FROM chats c2

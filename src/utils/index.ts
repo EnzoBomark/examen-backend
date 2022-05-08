@@ -7,7 +7,6 @@ import debug from './debug';
 import uuid from './uuid';
 import parsable from './parsable';
 import association from './association';
-import prod from './prod';
 
 export {
   kill,
@@ -19,5 +18,4 @@ export {
   uuid,
   parsable,
   association,
-  prod,
 };
