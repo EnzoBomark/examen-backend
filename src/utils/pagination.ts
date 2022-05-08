@@ -4,7 +4,7 @@ const pagination = <T extends Model>(
   model: ModelStatic<T>,
   query: FindOptions,
   page = 0,
-  pageSize = 5
+  pageSize = 25
 ) => {
   const offset = Number(page) * Number(pageSize);
   const limit = Number(pageSize);

@@ -47,4 +47,23 @@ export const associations = () => {
   });
 };
 
+export type Message = {
+  key: string | null;
+  uid: string;
+  message: string;
+  time: string;
+};
+
+export type ReadStatus = {
+  id: string;
+  isRead: boolean;
+};
+
+export type ChatWithMessages = {
+  messages: Message[];
+  readStatus: ReadStatus[];
+  id: string;
+  type: 'match' | 'group' | 'user';
+};
+
 export default Chat;

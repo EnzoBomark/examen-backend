@@ -2,6 +2,7 @@ import { conflict } from '@hapi/boom';
 import firebase from '../firebase';
 import { throwError } from '../middleware';
 import { Chat, User } from '../models';
+import { ChatWithMessages } from '../models/chat.model';
 import { cloudMessage, findOrFail } from '../services';
 import { association, pick, prod } from '../utils';
 
@@ -15,25 +16,6 @@ const getProfile = async (req: Req<auth>, res: Res<User>) => {
   } catch (err) {
     return throwError('Cannot get profile', err);
   }
-};
-
-type Message = {
-  key: string | null;
-  uid: string;
-  message: string;
-  time: string;
-};
-
-type ReadStatus = {
-  id: string;
-  isRead: boolean;
-};
-
-type ChatWithMessages = {
-  messages: Message[];
-  readStatus: ReadStatus[];
-  id: string;
-  type: 'match' | 'group' | 'user';
 };
 
 const getProfileChats = async (
@@ -59,6 +41,7 @@ const getProfileChats = async (
         }[] = [];
 
         const readStatus: { id: string; isRead: boolean }[] = [];
+
         await prod(async () => {
           const messagesRef = firebase.root
             .database()
