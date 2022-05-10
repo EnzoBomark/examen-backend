@@ -14,7 +14,8 @@ interface Attributes {
   court?: string;
   price?: number;
   phone?: number;
-  result?: string;
+  teamOneScore?: number;
+  teamTwoScore?: number;
   isPublic?: boolean;
   isPlayed?: boolean;
   isBooked?: boolean;
@@ -81,12 +82,13 @@ export const table = async (sequelize: Sequelize) => {
           isNumeric: true,
         },
       },
-      result: {
+      teamOneScore: {
         allowNull: true,
-        type: DataTypes.STRING,
-        validate: {
-          notEmpty: true,
-        },
+        type: DataTypes.NUMBER,
+      },
+      teamTwoScore: {
+        allowNull: true,
+        type: DataTypes.NUMBER,
       },
       isPublic: {
         allowNull: false,

@@ -11,7 +11,8 @@ export const up = async (knex: Knex): Promise<void> => {
     table.float('price').nullable();
     table.integer('skill').nullable();
     table.string('phone').nullable();
-    table.string('result').nullable();
+    table.integer('team_one_score').nullable();
+    table.integer('team_two_score').nullable();
     table.boolean('is_public').notNullable();
     table.boolean('is_played').notNullable();
     table.boolean('is_booked').notNullable();

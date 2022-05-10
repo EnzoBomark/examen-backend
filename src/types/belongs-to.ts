@@ -12,6 +12,6 @@ export type BelongsTo<
     Seq.BelongsToSetAssociationMixin<Model, number>
   > &
   Record<
-    `set${Capitalize<Singular>}`,
+    `create${Capitalize<Singular>}`,
     Seq.BelongsToCreateAssociationMixin<Model>
   >;

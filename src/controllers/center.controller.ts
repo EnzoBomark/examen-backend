@@ -1,10 +1,11 @@
-import { Center, City } from '../models';
+import { Body, Ids, Param, Query, Req, Res } from '../types';
 import { pick, clean, pagination } from '../utils';
+import { Center, City } from '../models';
 import { throwError } from '../middleware';
 import { findOrFail } from '../services';
 import database from '../database';
 
-const getCenter = async (req: Req<param>, res: Res<Center>) => {
+const getCenter = async (req: Req<Param>, res: Res<Center>) => {
   const { id } = req.params;
 
   try {
@@ -19,7 +20,7 @@ const getCenter = async (req: Req<param>, res: Res<Center>) => {
 };
 
 const getCenters = async (
-  req: Req<query<{ centerIds: Ids; cityIds: Ids }>>,
+  req: Req<Query<{ centerIds: Ids; cityIds: Ids }>>,
   res: Res<ReadonlyArray<Center>>
 ) => {
   const { query } = req;
@@ -41,7 +42,7 @@ const getCenters = async (
   }
 };
 
-const postCenter = async (req: Req<body<Center>>, res: Res<Center>) => {
+const postCenter = async (req: Req<Body<Center>>, res: Res<Center>) => {
   const { body } = req;
 
   try {
@@ -65,7 +66,7 @@ const postCenter = async (req: Req<body<Center>>, res: Res<Center>) => {
 };
 
 const putCenter = async (
-  req: Req<body<Partial<Center>>, param>,
+  req: Req<Body<Partial<Center>>, Param>,
   res: Res<Center>
 ) => {
   const { params, body } = req;
@@ -93,7 +94,7 @@ const putCenter = async (
   }
 };
 
-const deleteCenter = async (req: Req<param>, res: Res<string>) => {
+const deleteCenter = async (req: Req<Param>, res: Res<string>) => {
   const { params } = req;
 
   try {

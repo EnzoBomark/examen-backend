@@ -1,10 +1,11 @@
+import { Body, Ids, Param, Query, Req, Res } from '../types';
 import { City, Country } from '../models';
 import { throwError } from '../middleware';
 import { clean, pagination, pick } from '../utils';
 import { findOrFail } from '../services';
 import database from '../database';
 
-const getCity = async (req: Req<param>, res: Res<City>) => {
+const getCity = async (req: Req<Param>, res: Res<City>) => {
   const { params } = req;
 
   try {
@@ -17,7 +18,7 @@ const getCity = async (req: Req<param>, res: Res<City>) => {
 };
 
 const getCities = async (
-  req: Req<query<{ cityIds: Ids; countryIds: Ids }>>,
+  req: Req<Query<{ cityIds: Ids; countryIds: Ids }>>,
   res: Res<City[]>
 ) => {
   const { query } = req;
@@ -45,7 +46,7 @@ const getCities = async (
   }
 };
 
-const postCity = async (req: Req<body<City>>, res: Res<City>) => {
+const postCity = async (req: Req<Body<City>>, res: Res<City>) => {
   const { body } = req;
 
   try {
@@ -68,7 +69,7 @@ const postCity = async (req: Req<body<City>>, res: Res<City>) => {
 };
 
 const putCity = async (
-  req: Req<param, body<Partial<City>>>,
+  req: Req<Param, Body<Partial<City>>>,
   res: Res<City>
 ) => {
   const { params, body } = req;
@@ -94,7 +95,7 @@ const putCity = async (
   }
 };
 
-const deleteCity = async (req: Req<param>, res: Res<string>) => {
+const deleteCity = async (req: Req<Param>, res: Res<string>) => {
   const { params } = req;
 
   try {

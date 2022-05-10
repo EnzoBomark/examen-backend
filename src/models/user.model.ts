@@ -2,7 +2,7 @@ import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
 import { uuid } from '../utils';
 import { Center, City, Match, Chat } from '.';
-import { BelongsToMany } from '../types';
+import { BelongsTo, BelongsToMany } from '../types';
 import {
   usersCenters,
   usersChats,
@@ -18,6 +18,7 @@ interface Attributes {
   phone: string;
   picture?: string;
   description?: string;
+  birthDate?: string;
   skill?: '0' | '1' | '2' | '3' | '4' | '5';
   isRightHand?: boolean;
   fcm?: string;
@@ -32,9 +33,10 @@ interface User
     BelongsToMany<'followings', User>,
     BelongsToMany<'followers', User>,
     BelongsToMany<'centers', Center>,
-    BelongsToMany<'cities', City>,
     BelongsToMany<'matches', Match>,
     BelongsToMany<'chats', Chat>,
+    BelongsToMany<'cities', City>,
+    BelongsTo<'city', City>,
     CreationDates {}
 
 export const table = async (sequelize: Sequelize) => {
@@ -66,6 +68,10 @@ export const table = async (sequelize: Sequelize) => {
         },
       },
       picture: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      birthDate: {
         type: DataTypes.STRING,
         allowNull: true,
       },
@@ -129,6 +135,11 @@ export const associations = () => {
     through: usersChats,
     foreignKey: 'userId',
     as: 'chats',
+  });
+
+  User.belongsTo(City, {
+    foreignKey: 'cityId',
+    as: 'city',
   });
 };
 

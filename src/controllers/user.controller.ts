@@ -1,11 +1,11 @@
 import { Op } from 'sequelize';
-
+import { Auth, Ids, Param, Query, Req, Res } from '../types';
 import { throwError } from '../middleware';
 import { Center, City, User } from '../models';
 import { findOrFail } from '../services';
 import { clean, pagination } from '../utils';
 
-const getUser = async (req: Req<param>, res: Res<User>) => {
+const getUser = async (req: Req<Param>, res: Res<User>) => {
   const { params } = req;
 
   try {
@@ -26,7 +26,7 @@ const getUser = async (req: Req<param>, res: Res<User>) => {
 };
 
 const getUsers = async (
-  req: Req<auth, query<{ userIds: Ids; cityIds: Ids; name: string }>>,
+  req: Req<Auth, Query<{ userIds: Ids; cityIds: Ids; name: string }>>,
   res: Res<ReadonlyArray<User>>
 ) => {
   const { query, auth } = req;

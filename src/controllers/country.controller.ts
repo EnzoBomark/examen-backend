@@ -1,9 +1,10 @@
+import { Body, Ids, Param, Query, Req, Res } from '../types';
 import { Country } from '../models';
 import { throwError } from '../middleware';
 import { clean, pagination, pick } from '../utils';
 import { findOrFail } from '../services';
 
-const getCountry = async (req: Req<param>, res: Res<Country>) => {
+const getCountry = async (req: Req<Param>, res: Res<Country>) => {
   const { params } = req;
 
   try {
@@ -18,7 +19,7 @@ const getCountry = async (req: Req<param>, res: Res<Country>) => {
 };
 
 const getCountries = async (
-  req: Req<query<{ countryIds: Ids }>>,
+  req: Req<Query<{ countryIds: Ids }>>,
   res: Res<ReadonlyArray<Country>>
 ) => {
   const { query } = req;
@@ -39,7 +40,7 @@ const getCountries = async (
   }
 };
 
-const postCountry = async (req: Req<body<Country>>, res: Res<Country>) => {
+const postCountry = async (req: Req<Body<Country>>, res: Res<Country>) => {
   const { body } = req;
 
   try {
@@ -52,7 +53,7 @@ const postCountry = async (req: Req<body<Country>>, res: Res<Country>) => {
 };
 
 const putCountry = async (
-  req: Req<param, body<Partial<Country>>>,
+  req: Req<Param, Body<Partial<Country>>>,
   res: Res<Country>
 ) => {
   const { params, body } = req;
@@ -70,7 +71,7 @@ const putCountry = async (
   }
 };
 
-const deleteCountry = async (req: Req<param>, res: Res<string>) => {
+const deleteCountry = async (req: Req<Param>, res: Res<string>) => {
   const { params } = req;
 
   try {

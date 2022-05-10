@@ -1,13 +1,15 @@
 import { badData } from '@hapi/boom';
+import { Auth, Body, Req, Res } from '../types';
 import { User, Chat } from '../models';
-import { chatExists, findOrFail } from '../services';
 import { throwError } from '../middleware';
+import { chatExists, findOrFail } from '../services';
+import { ChatWithMessages } from '../models/chat.model';
+import { prod } from '../config/constant.config';
 import database from '../database';
 import firebase from '../firebase';
-import { ChatWithMessages } from '../models/chat.model';
 
 const postChat = async (
-  req: Req<auth, body<{ userIds: ReadonlyArray<string> | string }>>,
+  req: Req<Auth, Body<{ userIds: ReadonlyArray<string> | string }>>,
   res: Res<ChatWithMessages>
 ) => {
   const { auth, body } = req;
@@ -27,7 +29,7 @@ const postChat = async (
         { include: [{ model: User, as: 'users' }], transaction }
       );
 
-      if (process.env.NODE_ENV !== 'test') {
+      if (prod) {
         const statusRef = firebase.root
           .database()
           .ref(`/chat_rooms_status/${T.getDataValue('id')}`);
@@ -56,7 +58,7 @@ const postChat = async (
 
     const readStatus: { id: string; isRead: boolean }[] = [];
 
-    if (process.env.NODE_ENV !== 'test') {
+    if (prod) {
       const messagesRef = firebase.root
         .database()
         .ref(`/chat_rooms/${chat.getDataValue('id')}`);

@@ -1,11 +1,13 @@
+import { Auth, Body, Ids, Param, Query, Req, Res } from '../types';
 import { Center, Chat, Match, User } from '../models';
 import { throwError } from '../middleware';
 import { clean, pagination, pick } from '../utils';
 import { findOrFail } from '../services';
 import database from '../database';
 import firebase from '../firebase';
+import { prod } from '../config/constant.config';
 
-const getMatch = async (req: Req<param>, res: Res<Match>) => {
+const getMatch = async (req: Req<Param>, res: Res<Match>) => {
   const { params } = req;
 
   try {
@@ -21,7 +23,7 @@ const getMatch = async (req: Req<param>, res: Res<Match>) => {
 };
 
 const getMatches = async (
-  req: Req<query<{ matchIds: Ids }>>,
+  req: Req<Query<{ matchIds: Ids }>>,
   res: Res<ReadonlyArray<Match>>
 ) => {
   const { query } = req;
@@ -43,7 +45,7 @@ const getMatches = async (
   }
 };
 
-const postMatch = async (req: Req<auth, body<Match>>, res: Res<Match>) => {
+const postMatch = async (req: Req<Auth, Body<Match>>, res: Res<Match>) => {
   const { auth, body } = req;
 
   try {
@@ -82,7 +84,7 @@ const postMatch = async (req: Req<auth, body<Match>>, res: Res<Match>) => {
 
       const chat = await Chat.create({ type: 'match' }, { transaction });
 
-      if (process.env.NODE_ENV !== 'test') {
+      if (prod) {
         const statusRef = firebase.root
           .database()
           .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
@@ -111,7 +113,7 @@ const postMatch = async (req: Req<auth, body<Match>>, res: Res<Match>) => {
 };
 
 const putMatch = async (
-  req: Req<param, body<Partial<Match>>>,
+  req: Req<Param, Body<Partial<Match>>>,
   res: Res<Match>
 ) => {
   const { params, body } = req;
@@ -137,7 +139,8 @@ const putMatch = async (
         'currency',
         'price',
         'phone',
-        'result',
+        'teamOneScore',
+        'teamTwoScore',
         'isPlayed',
         'isPublic',
         'isBooked'
@@ -150,7 +153,7 @@ const putMatch = async (
   }
 };
 
-const deleteMatch = async (req: Req<param>, res: Res<string>) => {
+const deleteMatch = async (req: Req<Param>, res: Res<string>) => {
   const { params } = req;
 
   try {

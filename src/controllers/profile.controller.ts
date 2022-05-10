@@ -1,12 +1,15 @@
 import { conflict } from '@hapi/boom';
 import firebase from '../firebase';
+import { Auth, Body, Param, Query, Req, Res } from '../types';
 import { throwError } from '../middleware';
-import { Chat, User } from '../models';
+import { Center, Chat, City, Match, User } from '../models';
 import { ChatWithMessages } from '../models/chat.model';
 import { cloudMessage, findOrFail } from '../services';
 import { association, pick } from '../utils';
+import { prod } from '../config/constant.config';
+import database from '../database';
 
-const getProfile = async (req: Req<auth>, res: Res<User>) => {
+const getProfile = async (req: Req<Auth>, res: Res<User>) => {
   const { auth } = req;
 
   try {
@@ -19,7 +22,7 @@ const getProfile = async (req: Req<auth>, res: Res<User>) => {
 };
 
 const getProfileChats = async (
-  req: Req<auth, query>,
+  req: Req<Auth, Query>,
   res: Res<ChatWithMessages[]>
 ) => {
   const { auth } = req;
@@ -42,7 +45,7 @@ const getProfileChats = async (
 
         const readStatus: { id: string; isRead: boolean }[] = [];
 
-        if (process.env.NODE_ENV !== 'test') {
+        if (prod) {
           const messagesRef = firebase.root
             .database()
             .ref(`/chat_rooms/${chat.getDataValue('id')}`);
@@ -90,7 +93,7 @@ const getProfileChats = async (
 };
 
 const getProfileFollows = async (
-  req: Req<auth, query>,
+  req: Req<Auth, Query>,
   res: Res<ReadonlyArray<User>>
 ) => {
   const { auth, query } = req;
@@ -109,7 +112,7 @@ const getProfileFollows = async (
 };
 
 const getProfileFollowers = async (
-  req: Req<auth, query>,
+  req: Req<Auth, Query>,
   res: Res<ReadonlyArray<User>>
 ) => {
   const { auth, query } = req;
@@ -127,7 +130,64 @@ const getProfileFollowers = async (
   }
 };
 
-const postProfile = async (req: Req<auth, body<User>>, res: Res<User>) => {
+const getProfileMatches = async (
+  req: Req<Auth, Query>,
+  res: Res<ReadonlyArray<Match>>
+) => {
+  const { auth, query } = req;
+
+  try {
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+
+    const matches = await profile.getMatches(
+      association({ include: [{ all: true }] }, query.page, query.pageSize)
+    );
+
+    return res.status(200).send(matches);
+  } catch (err) {
+    return throwError('Cannot get profile matches', err);
+  }
+};
+
+const getProfileCenters = async (
+  req: Req<Auth, Query>,
+  res: Res<ReadonlyArray<Center>>
+) => {
+  const { auth, query } = req;
+
+  try {
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+
+    const centers = await profile.getCenters(
+      association({ include: [{ all: true }] }, query.page, query.pageSize)
+    );
+
+    return res.status(200).send(centers);
+  } catch (err) {
+    return throwError('Cannot get profile centers', err);
+  }
+};
+
+const getProfileCities = async (
+  req: Req<Auth, Query>,
+  res: Res<ReadonlyArray<City>>
+) => {
+  const { auth, query } = req;
+
+  try {
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+
+    const cities = await profile.getCities(
+      association({ include: [{ all: true }] }, query.page, query.pageSize)
+    );
+
+    return res.status(200).send(cities);
+  } catch (err) {
+    return throwError('Cannot get profile cities', err);
+  }
+};
+
+const postProfile = async (req: Req<Auth, Body<User>>, res: Res<User>) => {
   const { auth, body } = req;
 
   try {
@@ -147,7 +207,7 @@ const postProfile = async (req: Req<auth, body<User>>, res: Res<User>) => {
 };
 
 const putProfile = async (
-  req: Req<auth, body<Partial<User>>>,
+  req: Req<Auth, Body<Partial<User>>>,
   res: Res<User>
 ) => {
   const { auth, body } = req;
@@ -163,6 +223,7 @@ const putProfile = async (
         'email',
         'skill',
         'description',
+        'birthDate',
         'isRightHand',
         'picture',
         'fcm'
@@ -175,7 +236,23 @@ const putProfile = async (
   }
 };
 
-const putProfileChat = async (req: Req<auth, param>, res: Res<Chat>) => {
+const putProfileMainCity = async (req: Req<Auth, Param>, res: Res<City>) => {
+  const { auth, params } = req;
+
+  try {
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+
+    const city = await findOrFail(City, { where: { id: params.id } });
+
+    profile.setCity(city);
+
+    return res.status(200).send(city);
+  } catch (err) {
+    return throwError('Cannot update profile main city', err);
+  }
+};
+
+const putProfileChat = async (req: Req<Auth, Param>, res: Res<Chat>) => {
   const { auth, params } = req;
 
   try {
@@ -214,11 +291,12 @@ const putProfileChat = async (req: Req<auth, param>, res: Res<Chat>) => {
   }
 };
 
-const putProfileFollow = async (req: Req<auth, param>, res: Res<User>) => {
+const putProfileFollow = async (req: Req<Auth, Param>, res: Res<User>) => {
   const { auth, params } = req;
 
   try {
     const profile = await findOrFail(User, { where: { id: auth.uid } });
+
     const followee = await findOrFail(User, { where: { id: params.id } });
 
     const isRelationExisting = await profile.hasFollowings([followee]);
@@ -243,15 +321,99 @@ const putProfileFollow = async (req: Req<auth, param>, res: Res<User>) => {
   }
 };
 
+const putProfileCenter = async (req: Req<Auth, Param>, res: Res<User>) => {
+  const { auth, params } = req;
+
+  try {
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+    const center = await findOrFail(Center, { where: { id: params.id } });
+
+    const isRelationExisting = await profile.hasCenters([center]);
+
+    if (!isRelationExisting) await profile.addCenters([center]);
+
+    if (isRelationExisting) await profile.removeCenters([center]);
+
+    return res.status(200).send(profile);
+  } catch (err) {
+    return throwError('Cannot update profile center', err);
+  }
+};
+
+const putProfileMatch = async (
+  req: Req<Auth, Param, Body<{ position: string }>>,
+  res: Res<User>
+) => {
+  const { auth, params, body } = req;
+
+  try {
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+
+    const match = await findOrFail(Match, { where: { id: params.id } });
+
+    const isRelationExisting = await profile.hasMatches([match]);
+
+    if (!isRelationExisting) {
+      if (
+        (match.getDataValue('type') === 'double' &&
+          (await match.countUsers()) > 3) ||
+        (match.getDataValue('type') === 'single' &&
+          (await match.countUsers()) > 1)
+      ) {
+        throw conflict('Match is full');
+      }
+
+      await database.transaction(async (transaction) => {
+        const users = (await match.getUsers()) as Array<
+          User & { usersMatches: { position: string } }
+        >;
+
+        if (users.some((u) => u.usersMatches.position === body.position)) {
+          throw conflict(`Position ${body.position} isn't available`);
+        }
+
+        profile.addMatches([match], {
+          through: { position: body.position },
+          transaction,
+        });
+
+        const chat = await match.getChat();
+
+        profile.addChats([chat], { transaction });
+      });
+    }
+
+    if (isRelationExisting) {
+      await database.transaction(async (transaction) => {
+        const chat = await match.getChat();
+
+        profile.removeChats([chat], { transaction });
+
+        profile.removeMatches([match], { transaction });
+      });
+    }
+
+    return res.status(200).send(profile);
+  } catch (err) {
+    return throwError('Cannot update profile match', err);
+  }
+};
+
 const user = {
   getProfile,
   getProfileChats,
   getProfileFollows,
   getProfileFollowers,
+  getProfileMatches,
+  getProfileCenters,
+  getProfileCities,
   postProfile,
   putProfile,
+  putProfileMainCity,
   putProfileChat,
   putProfileFollow,
+  putProfileCenter,
+  putProfileMatch,
 };
 
 export default user;
