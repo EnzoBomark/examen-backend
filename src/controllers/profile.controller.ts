@@ -106,7 +106,7 @@ const getProfileFollows = async (
         {
           include: [
             {
-              as: 'users',
+              as: 'followers',
               model: User,
               required: false,
               where: clean({ id: auth.uid }),
@@ -138,7 +138,7 @@ const getProfileFollowers = async (
         {
           include: [
             {
-              as: 'users',
+              as: 'followers',
               model: User,
               required: false,
               where: clean({ id: auth.uid }),
