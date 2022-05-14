@@ -1,6 +1,7 @@
-import { Body, Ids, Param, Query, Req, Res } from '../types';
+import { Op } from 'sequelize';
+import { Auth, Body, Ids, Param, Query, Req, Res } from '../types';
 import { pick, clean, pagination } from '../utils';
-import { Center, City } from '../models';
+import { Center, City, User } from '../models';
 import { throwError } from '../middleware';
 import { findOrFail } from '../services';
 import database from '../database';
@@ -20,22 +21,35 @@ const getCenter = async (req: Req<Param>, res: Res<Center>) => {
 };
 
 const getCenters = async (
-  req: Req<Query<{ centerIds: Ids; cityIds: Ids }>>,
+  req: Req<Auth, Query<{ centerIds: Ids; query: string }>>,
   res: Res<ReadonlyArray<Center>>
 ) => {
-  const { query } = req;
+  const { query, auth } = req;
 
   try {
     const centers = await pagination(
       Center,
       {
-        where: clean({ id: query.centerIds }),
-        include: { all: true },
+        where: clean({
+          id: query.centerIds,
+          [Op.or]: [
+            { name: { [Op.iLike]: `%${query.query || ''}%` } },
+            { address: { [Op.iLike]: `%${query.query || ''}%` } },
+          ],
+        }),
+        include: [
+          { model: City, as: 'city' },
+          {
+            as: 'users',
+            model: User,
+            required: false,
+            where: clean({ id: auth.uid }),
+          },
+        ],
       },
       query.page,
       query.pageSize
     );
-
     return res.status(200).send(centers);
   } catch (err) {
     return throwError('Cannot get centers', err);

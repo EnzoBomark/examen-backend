@@ -54,23 +54,23 @@ export const seed = async (knex: Knex): Promise<void> => {
   await knex('centers').insert([
     {
       id: 'e9988682-3539-4d37-a620-93056126b9cd',
-      name: 'Stockholm Tennis Center',
+      name: 'Tennisstadion',
       picture:
         'https://images.unsplash.com/photo-1613870930431-a09c7139eb33?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGFkZWx8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60',
-      address: 'example 00',
-      contact_url: 'https://example.se',
-      booking_url: 'https://example.se',
+      address: 'Södra Fiskartorpsvägen 20, 114 33 Stockholm, Sverige',
+      contact_url: 'http://tennisstadion.se/kontakt-tennisstadion-stockholm/',
+      booking_url: 'http://tennisstadion.se/boka-tid/',
       city_id: 'fe59bd04-1abb-4734-8592-e9bb7016a2c8',
     },
     {
       id: 'd367b332-fe6d-4a06-a9f9-fb5c68b4e5c8',
-      name: 'Oslo Tennis Center',
+      name: 'Salk tennis klubb',
       picture:
-        'https://images.unsplash.com/photo-1613870930431-a09c7139eb33?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGFkZWx8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60',
-      address: 'example 00',
-      contact_url: 'https://example.se',
-      booking_url: 'https://example.se',
-      city_id: '16b187e8-a950-49d6-8142-91c3f2c255e8',
+        'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670&q=80',
+      address: 'Gustavslundsvägen 159, 167 51 Bromma',
+      contact_url: 'https://salk.se/klubben/om-salk/kontakt/',
+      booking_url: 'https://salk.se/boka-bana/',
+      city_id: 'fe59bd04-1abb-4734-8592-e9bb7016a2c8',
     },
   ]);
 

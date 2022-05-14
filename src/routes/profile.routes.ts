@@ -18,6 +18,10 @@ router.put('/profile', controllers.putProfile);
 
 router.put('/profile/chat/:id', controllers.putProfileChat);
 
+router.put('/profile/center/:id', controllers.putProfileCenter);
+
+router.put('/profile/main/city/:id', controllers.putProfileMainCity);
+
 router.put('/profile/follow/:id', controllers.putProfileFollow);
 
 export default router;

@@ -5,7 +5,7 @@ import { throwError } from '../middleware';
 import { Center, Chat, City, Match, User } from '../models';
 import { ChatWithMessages } from '../models/chat.model';
 import { cloudMessage, findOrFail } from '../services';
-import { association, pick } from '../utils';
+import { association, clean, pick } from '../utils';
 import { prod } from '../config/constant.config';
 import database from '../database';
 
@@ -315,17 +315,30 @@ const putProfileFollow = async (req: Req<Auth, Param>, res: Res<User>) => {
       await profile.removeFollowings([followee]);
     }
 
-    return res.status(200).send(followee);
+    const response = await findOrFail(User, {
+      where: { id: params.id },
+      include: [
+        {
+          as: 'followers',
+          model: User,
+          required: false,
+          where: clean({ id: auth.uid }),
+        },
+      ],
+    });
+
+    return res.status(200).send(response);
   } catch (err) {
     return throwError('Cannot update profile follow', err);
   }
 };
 
-const putProfileCenter = async (req: Req<Auth, Param>, res: Res<User>) => {
+const putProfileCenter = async (req: Req<Auth, Param>, res: Res<Center>) => {
   const { auth, params } = req;
 
   try {
     const profile = await findOrFail(User, { where: { id: auth.uid } });
+
     const center = await findOrFail(Center, { where: { id: params.id } });
 
     const isRelationExisting = await profile.hasCenters([center]);
@@ -334,7 +347,20 @@ const putProfileCenter = async (req: Req<Auth, Param>, res: Res<User>) => {
 
     if (isRelationExisting) await profile.removeCenters([center]);
 
-    return res.status(200).send(profile);
+    const response = await findOrFail(Center, {
+      where: { id: params.id },
+      include: [
+        { model: City, as: 'city' },
+        {
+          as: 'users',
+          model: User,
+          required: false,
+          where: clean({ id: auth.uid }),
+        },
+      ],
+    });
+
+    return res.status(200).send(response);
   } catch (err) {
     return throwError('Cannot update profile center', err);
   }
