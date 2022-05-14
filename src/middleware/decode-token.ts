@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import { unauthorized } from '@hapi/boom';
 import firebase from '../firebase';
+import { prod, test } from '../config/constant.config';
 
 const decodeToken = async (req: Request, _: Response, next: NextFunction) => {
   const accessToken = req.headers.authorization;
@@ -15,11 +16,11 @@ const decodeToken = async (req: Request, _: Response, next: NextFunction) => {
   }
 
   try {
-    if (process.env.NODE_ENV === 'test') {
+    if (test) {
       req.auth = accessToken.includes('new') ? { uid: '5' } : { uid: '1' };
     }
 
-    if (process.env.NODE_ENV !== 'test') {
+    if (prod) {
       req.auth = await firebase.root
         .auth()
         .verifyIdToken(accessToken?.replace(/^Bearer\s/, ''));

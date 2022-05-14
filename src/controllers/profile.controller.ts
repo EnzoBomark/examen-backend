@@ -102,7 +102,20 @@ const getProfileFollows = async (
     const profile = await findOrFail(User, { where: { id: auth.uid } });
 
     const follows = await profile.getFollowings(
-      association({ include: [{ all: true }] }, query.page, query.pageSize)
+      association(
+        {
+          include: [
+            {
+              as: 'users',
+              model: User,
+              required: false,
+              where: clean({ id: auth.uid }),
+            },
+          ],
+        },
+        query.page,
+        query.pageSize
+      )
     );
 
     return res.status(200).send(follows);
@@ -121,7 +134,20 @@ const getProfileFollowers = async (
     const profile = await findOrFail(User, { where: { id: auth.uid } });
 
     const followers = await profile.getFollowers(
-      association({ include: [{ all: true }] }, query.page, query.pageSize)
+      association(
+        {
+          include: [
+            {
+              as: 'users',
+              model: User,
+              required: false,
+              where: clean({ id: auth.uid }),
+            },
+          ],
+        },
+        query.page,
+        query.pageSize
+      )
     );
 
     return res.status(200).send(followers);
