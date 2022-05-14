@@ -1,17 +1,17 @@
 import { Router } from 'express';
 
-import controllers from '../controllers';
+import cont from '../controllers';
 
 const router = Router();
 
-router.get('/center/:id', controllers.getCenter);
+router.get('/center/:id', cont.getCenter);
 
-router.get('/centers', controllers.getCenters);
+router.get('/centers', cont.getCenters);
 
-router.post('/center', controllers.postCenter);
+router.post('/center', cont.postCenter);
 
-router.put('/center/:id', controllers.putCenter);
+router.put('/center/:id', cont.putCenter);
 
-router.delete('/center/:id', controllers.deleteCenter);
+router.delete('/center/:id', cont.deleteCenter);
 
 export default router;

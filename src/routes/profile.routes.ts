@@ -1,27 +1,27 @@
 import { Router } from 'express';
 
-import controllers from '../controllers';
+import cont from '../controllers';
 
 const router = Router();
 
-router.get('/profile', controllers.getProfile);
+router.get('/profile', cont.getProfile);
 
-router.get('/profile/chats', controllers.getProfileChats);
+router.get('/profile/chats', cont.getProfileChats);
 
-router.get('/profile/followings', controllers.getProfileFollows);
+router.get('/profile/followings', cont.getProfileFollows);
 
-router.get('/profile/followers', controllers.getProfileFollowers);
+router.get('/profile/followers', cont.getProfileFollowers);
 
-router.post('/profile', controllers.postProfile);
+router.post('/profile', cont.postProfile);
 
-router.put('/profile', controllers.putProfile);
+router.put('/profile', cont.putProfile);
 
-router.put('/profile/chat/:id', controllers.putProfileChat);
+router.put('/profile/chat/:id', cont.putProfileChat);
 
-router.put('/profile/center/:id', controllers.putProfileCenter);
+router.put('/profile/center/:id', cont.putProfileCenter);
 
-router.put('/profile/main/city/:id', controllers.putProfileMainCity);
+router.put('/profile/main/city/:id', cont.putProfileMainCity);
 
-router.put('/profile/follow/:id', controllers.putProfileFollow);
+router.put('/profile/follow/:id', cont.putProfileFollow);
 
 export default router;

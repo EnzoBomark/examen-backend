@@ -235,7 +235,7 @@ const getUserWinRate = async (
 
 const getUserFollows = async (
   req: Req<Auth, Query, Param>,
-  res: Res<ReadonlyArray<User>>
+  res: Res<User[]>
 ) => {
   const { auth, params, query } = req;
 
@@ -265,9 +265,26 @@ const getUserFollows = async (
   }
 };
 
+const getUserFollowsCount = async (
+  req: Req<Param>,
+  res: Res<{ count: number }>
+) => {
+  const { params } = req;
+
+  try {
+    const user = await findOrFail(User, { where: { id: params.id } });
+
+    const count = await user.countFollowings();
+
+    return res.status(200).send({ count });
+  } catch (err) {
+    return throwError('Cannot get user followings', err);
+  }
+};
+
 const getUserFollowers = async (
   req: Req<Auth, Query, Param>,
-  res: Res<ReadonlyArray<User>>
+  res: Res<User[]>
 ) => {
   const { auth, params, query } = req;
 
@@ -297,6 +314,56 @@ const getUserFollowers = async (
   }
 };
 
+const getUserFollowersCount = async (
+  req: Req<Param>,
+  res: Res<{ count: number }>
+) => {
+  const { params } = req;
+
+  try {
+    const user = await findOrFail(User, { where: { id: params.id } });
+
+    const count = await user.countFollowers();
+
+    return res.status(200).send({ count });
+  } catch (err) {
+    return throwError('Cannot get user followers', err);
+  }
+};
+
+const getUserCenters = async (req: Req<Query, Param>, res: Res<Center[]>) => {
+  const { params, query } = req;
+
+  try {
+    const user = await findOrFail(User, { where: { id: params.id } });
+
+    const centers = await user.getCenters(
+      association({}, query.page, query.pageSize)
+    );
+
+    return res.status(200).send(centers);
+  } catch (err) {
+    return throwError('Cannot get user centers', err);
+  }
+};
+
+const getUserCentersCount = async (
+  req: Req<Param>,
+  res: Res<{ count: number }>
+) => {
+  const { params } = req;
+
+  try {
+    const user = await findOrFail(User, { where: { id: params.id } });
+
+    const count = await user.countCenters();
+
+    return res.status(200).send({ count });
+  } catch (err) {
+    return throwError('Cannot get user centers', err);
+  }
+};
+
 const user = {
   getUser,
   getUsers,
@@ -306,7 +373,11 @@ const user = {
   getUserUpcomingCount,
   getUserWinRate,
   getUserFollows,
+  getUserFollowsCount,
   getUserFollowers,
+  getUserFollowersCount,
+  getUserCenters,
+  getUserCentersCount,
 };
 
 export default user;

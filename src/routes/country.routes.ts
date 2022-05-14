@@ -1,17 +1,17 @@
 import { Router } from 'express';
 
-import controllers from '../controllers';
+import cont from '../controllers';
 
 const router = Router();
 
-router.get('/country/:id', controllers.getCountry);
+router.get('/country/:id', cont.getCountry);
 
-router.get('/countries', controllers.getCountries);
+router.get('/countries', cont.getCountries);
 
-router.post('/country', controllers.postCountry);
+router.post('/country', cont.postCountry);
 
-router.put('/country/:id', controllers.putCountry);
+router.put('/country/:id', cont.putCountry);
 
-router.delete('/country/:id', controllers.deleteCountry);
+router.delete('/country/:id', cont.deleteCountry);
 
 export default router;

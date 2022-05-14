@@ -1,17 +1,17 @@
 import { Router } from 'express';
 
-import controllers from '../controllers';
+import cont from '../controllers';
 
 const router = Router();
 
-router.get('/match/:id', controllers.getMatch);
+router.get('/match/:id', cont.getMatch);
 
-router.get('/matches', controllers.getMatches);
+router.get('/matches', cont.getMatches);
 
-router.post('/match', controllers.postMatch);
+router.post('/match', cont.postMatch);
 
-router.put('/match/:id', controllers.putMatch);
+router.put('/match/:id', cont.putMatch);
 
-router.delete('/match/:id', controllers.deleteMatch);
+router.delete('/match/:id', cont.deleteMatch);
 
 export default router;
