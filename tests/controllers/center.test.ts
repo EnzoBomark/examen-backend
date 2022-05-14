@@ -8,7 +8,7 @@ describe('Center controller test', () => {
       .set('Authorization', 'Bearer token');
 
     expect(response.statusCode).toBe(200);
-    expect(response.body.name).toBe('Stockholm Tennis Center');
+    expect(response.body.name).toBe('Tennisstadion');
   });
 
   it('should return 422 with faulty id provided', async () => {
