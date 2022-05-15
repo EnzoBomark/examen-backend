@@ -1,3 +1,4 @@
+import { conflict } from '@hapi/boom';
 import { Auth, Body, Ids, Param, Query, Req, Res } from '../types';
 import { Center, Chat, Match, User } from '../models';
 import { throwError } from '../middleware';
@@ -153,11 +154,30 @@ const putMatch = async (
   }
 };
 
-const deleteMatch = async (req: Req<Param>, res: Res<string>) => {
-  const { params } = req;
+const deleteMatch = async (req: Req<Auth, Param>, res: Res<string>) => {
+  const { auth, params } = req;
 
   try {
     const match = await findOrFail(Match, { where: { id: params.id } });
+
+    const users = (await match.getUsers()) as Array<
+      User & { usersMatches: { isAdmin: boolean; userId: string } }
+    >;
+
+    const matchUserInfo = users.find((u) => u.usersMatches.userId === auth.uid);
+
+    if (!matchUserInfo || !matchUserInfo.usersMatches.isAdmin)
+      throw conflict('You are not the admin of this match');
+
+    if (prod) {
+      const chat = await match.getChat();
+
+      const statusRef = firebase.root
+        .database()
+        .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
+
+      await statusRef.remove();
+    }
 
     await match.destroy();
 
