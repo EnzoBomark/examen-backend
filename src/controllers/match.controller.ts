@@ -144,7 +144,8 @@ const putMatch = async (
         'teamTwoScore',
         'isPlayed',
         'isPublic',
-        'isBooked'
+        'isBooked',
+        'description'
       )
     );
 

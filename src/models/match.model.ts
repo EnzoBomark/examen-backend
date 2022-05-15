@@ -19,6 +19,7 @@ interface Attributes {
   isPublic?: boolean;
   isPlayed?: boolean;
   isBooked?: boolean;
+  description?: string;
   centerId?: string;
 }
 
@@ -80,6 +81,13 @@ export const table = async (sequelize: Sequelize) => {
         type: DataTypes.STRING,
         validate: {
           isNumeric: true,
+        },
+      },
+      description: {
+        allowNull: true,
+        type: DataTypes.STRING,
+        validate: {
+          max: 600,
         },
       },
       teamOneScore: {
