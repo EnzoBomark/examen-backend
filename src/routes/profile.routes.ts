@@ -24,4 +24,6 @@ router.put('/profile/main/city/:id', cont.putProfileMainCity);
 
 router.put('/profile/follow/:id', cont.putProfileFollow);
 
+router.put('/profile/match/:id', cont.putProfileMatch);
+
 export default router;

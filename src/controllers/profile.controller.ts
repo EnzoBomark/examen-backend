@@ -394,7 +394,7 @@ const putProfileCenter = async (req: Req<Auth, Param>, res: Res<Center>) => {
 
 const putProfileMatch = async (
   req: Req<Auth, Param, Body<{ position: string }>>,
-  res: Res<User>
+  res: Res<Match>
 ) => {
   const { auth, params, body } = req;
 
@@ -415,23 +415,23 @@ const putProfileMatch = async (
         throw conflict('Match is full');
       }
 
+      const users = (await match.getUsers()) as Array<
+        User & { usersMatches: { position: string } }
+      >;
+
+      if (users.some((u) => u.usersMatches.position === body.position)) {
+        throw conflict(`Position ${body.position} isn't available`);
+      }
+
       await database.transaction(async (transaction) => {
-        const users = (await match.getUsers()) as Array<
-          User & { usersMatches: { position: string } }
-        >;
-
-        if (users.some((u) => u.usersMatches.position === body.position)) {
-          throw conflict(`Position ${body.position} isn't available`);
-        }
-
-        profile.addMatches([match], {
+        await profile.addMatches([match], {
           through: { position: body.position },
           transaction,
         });
 
         const chat = await match.getChat();
 
-        profile.addChats([chat], { transaction });
+        await profile.addChats([chat], { transaction });
       });
     }
 
@@ -439,13 +439,18 @@ const putProfileMatch = async (
       await database.transaction(async (transaction) => {
         const chat = await match.getChat();
 
-        profile.removeChats([chat], { transaction });
+        await profile.removeChats([chat], { transaction });
 
-        profile.removeMatches([match], { transaction });
+        await profile.removeMatches([match], { transaction });
       });
     }
 
-    return res.status(200).send(profile);
+    const response = await findOrFail(Match, {
+      where: { id: params.id },
+      include: { all: true },
+    });
+
+    return res.status(200).send(response);
   } catch (err) {
     return throwError('Cannot update profile match', err);
   }
