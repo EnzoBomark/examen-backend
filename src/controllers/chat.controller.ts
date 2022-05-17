@@ -21,33 +21,38 @@ const postChat = async (
 
     if (users.length <= 1) throw badData('No users provided');
 
-    await chatExists(users);
+    const existingChat = await chatExists(users);
 
-    const chat = await database.transaction(async (transaction) => {
-      const T = await Chat.create(
-        { type: users.length > 2 ? 'group' : 'user' },
-        { include: [{ model: User, as: 'users' }], transaction }
-      );
+    const chat = existingChat
+      ? await findOrFail(Chat, {
+          where: { id: existingChat.id },
+          include: { all: true },
+        })
+      : await database.transaction(async (transaction) => {
+          const T = await Chat.create(
+            { type: users.length > 2 ? 'group' : 'user' },
+            { include: [{ model: User, as: 'users' }], transaction }
+          );
 
-      if (prod) {
-        const statusRef = firebase.root
-          .database()
-          .ref(`/chat_rooms_status/${T.getDataValue('id')}`);
+          if (prod) {
+            const statusRef = firebase.root
+              .database()
+              .ref(`/chat_rooms_status/${T.getDataValue('id')}`);
 
-        await Promise.all(
-          users.map((user) => {
-            return statusRef.push().set({
-              uid: user.id,
-              is_read: false,
-            });
-          })
-        );
-      }
+            await Promise.all(
+              users.map((user) => {
+                return statusRef.push().set({
+                  uid: user.id,
+                  is_read: false,
+                });
+              })
+            );
+          }
 
-      await T.addUsers(users, { transaction });
+          await T.addUsers(users, { transaction });
 
-      return T;
-    });
+          return T;
+        });
 
     const messages: {
       key: string | null;

@@ -431,6 +431,15 @@ const putProfileMatch = async (
 
         const chat = await match.getChat();
 
+        const statusRef = firebase.root
+          .database()
+          .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
+
+        statusRef.push().set({
+          uid: auth.uid,
+          is_read: true,
+        });
+
         await profile.addChats([chat], { transaction });
       });
     }
@@ -442,15 +451,78 @@ const putProfileMatch = async (
         await profile.removeChats([chat], { transaction });
 
         await profile.removeMatches([match], { transaction });
+
+        const statusRef = firebase.root
+          .database()
+          .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
+
+        statusRef.once('value', (users) => {
+          users.forEach((user) => {
+            if (user.val().uid === auth.uid) user.ref.remove();
+          });
+        });
       });
     }
+
+    const chat = await match.getChat({ include: { all: true } });
+
+    const messages: {
+      key: string | null;
+      uid: string;
+      message: string;
+      time: string;
+    }[] = [];
+
+    const readStatus: { id: string; isRead: boolean }[] = [];
+
+    if (prod) {
+      const messagesRef = firebase.root
+        .database()
+        .ref(`/chat_rooms/${chat.getDataValue('id')}`);
+
+      const messagesSnapShot = await messagesRef
+        .orderByKey()
+        .limitToLast(1)
+        .once('value');
+
+      messagesSnapShot.forEach((message) => {
+        messages.push({
+          key: message.key,
+          uid: message.val().uid,
+          message: message.val().message,
+          time: message.val().time,
+        });
+      });
+
+      const statusRef = firebase.root
+        .database()
+        .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
+
+      const statusSnapShot = await statusRef.once('value');
+
+      statusSnapShot.forEach((status) => {
+        readStatus.push({
+          id: status.val().uid,
+          isRead: status.val().is_read,
+        });
+      });
+    }
+
+    const chatWithMessages = {
+      ...chat.toJSON(),
+      messages,
+      readStatus,
+    };
 
     const response = await findOrFail(Match, {
       where: { id: params.id },
       include: { all: true },
     });
 
-    return res.status(200).send(response);
+    return res.status(200).send({
+      ...response.toJSON(),
+      chat: chatWithMessages,
+    } as unknown as Match);
   } catch (err) {
     return throwError('Cannot update profile match', err);
   }

@@ -1,4 +1,3 @@
-import { conflict } from '@hapi/boom';
 import { QueryTypes } from 'sequelize';
 import { Chat, User } from '../models';
 import database from '../database';
@@ -31,7 +30,7 @@ const chatExists = async (users: User[]) => {
     }
   );
 
-  if (chats.length) throw conflict('Chat already exists');
+  return chats.length ? chats[0] : undefined;
 };
 
 export default chatExists;

@@ -92,7 +92,7 @@ const postMatch = async (req: Req<Auth, Body<Match>>, res: Res<Match>) => {
 
         await statusRef.push().set({
           uid: user.getDataValue('id'),
-          is_read: false,
+          is_read: true,
         });
       }
 
@@ -125,10 +125,9 @@ const putMatch = async (
     if (body.centerId) {
       const center = await findOrFail(Center, {
         where: { id: body.centerId },
-        include: { all: true },
       });
 
-      match.setCenter(center);
+      await match.setCenter(center);
     }
 
     await match.update(
@@ -149,7 +148,12 @@ const putMatch = async (
       )
     );
 
-    return res.status(200).send(match);
+    const response = await findOrFail(Match, {
+      where: { id: params.id },
+      include: { all: true },
+    });
+
+    return res.status(200).send(response);
   } catch (err) {
     return throwError('Cannot update match', err);
   }
