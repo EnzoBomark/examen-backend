@@ -41,7 +41,7 @@ describe('Match controller test', () => {
       });
 
     expect(response.statusCode).toBe(200);
-    expect(response.body.price).toBe('300');
+    expect(response.body.price).toBe(300);
   });
 
   it('should delete match', async () => {

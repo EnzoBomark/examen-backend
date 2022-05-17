@@ -13,7 +13,7 @@ describe('Chat controller test', () => {
     expect(response.statusCode).toBe(201);
   });
 
-  it('should create not chat that already exits', async () => {
+  it('should not create new chat if it already exists', async () => {
     const response = await supertest(app)
       .post('/api/chat')
       .set('Authorization', 'Bearer token')
@@ -21,7 +21,7 @@ describe('Chat controller test', () => {
         userIds: ['2', '3'],
       });
 
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(201);
   });
 
   it('should not create chat when no users ar provided', async () => {
