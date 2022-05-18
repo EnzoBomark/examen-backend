@@ -6,6 +6,8 @@ const router = Router();
 
 router.get('/profile', cont.getProfile);
 
+router.get('/profile/notifications', cont.getProfileNotifications);
+
 router.get('/profile/chats', cont.getProfileChats);
 
 router.get('/profile/followings', cont.getProfileFollows);

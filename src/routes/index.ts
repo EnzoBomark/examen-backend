@@ -8,6 +8,7 @@ import profile from './profile.routes';
 import chat from './chat.routes';
 import match from './match.routes';
 import user from './user.routes';
+import notification from './notification.routes';
 
 const routes = Router();
 
@@ -19,5 +20,6 @@ routes.use(profile);
 routes.use(chat);
 routes.use(match);
 routes.use(user);
+routes.use(notification);
 
 export default routes;

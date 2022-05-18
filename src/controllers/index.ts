@@ -5,6 +5,7 @@ import center from './center.controller';
 import chat from './chat.controller';
 import match from './match.controller';
 import user from './user.controller';
+import notification from './notification.controller';
 
 const controllers = {
   ...country,
@@ -14,6 +15,7 @@ const controllers = {
   ...chat,
   ...match,
   ...user,
+  ...notification,
 };
 
 export default controllers;

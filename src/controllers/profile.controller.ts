@@ -2,7 +2,7 @@ import { conflict } from '@hapi/boom';
 import firebase from '../firebase';
 import { Auth, Body, Param, Query, Req, Res } from '../types';
 import { throwError } from '../middleware';
-import { Center, Chat, City, Match, User } from '../models';
+import { Center, Chat, City, Match, User, Notification } from '../models';
 import { ChatWithMessages } from '../models/chat.model';
 import { cloudMessage, findOrFail } from '../services';
 import { association, clean, pick } from '../utils';
@@ -18,6 +18,25 @@ const getProfile = async (req: Req<Auth>, res: Res<User>) => {
     return res.status(200).send(profile);
   } catch (err) {
     return throwError('Cannot get profile', err);
+  }
+};
+
+const getProfileNotifications = async (
+  req: Req<Auth, Query>,
+  res: Res<Notification[]>
+) => {
+  const { auth, query } = req;
+
+  try {
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+
+    const notifications = await profile.getNotifications(
+      association({}, query.page, query.pageSize)
+    );
+
+    return res.status(200).send(notifications);
+  } catch (err) {
+    return throwError('Cannot get profile notifications', err);
   }
 };
 
@@ -530,6 +549,7 @@ const putProfileMatch = async (
 
 const user = {
   getProfile,
+  getProfileNotifications,
   getProfileChats,
   getProfileFollows,
   getProfileFollowers,

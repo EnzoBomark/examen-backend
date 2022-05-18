@@ -28,7 +28,12 @@ import Match, {
   table as matchTable,
 } from './match.model';
 
-export { City, Country, User, Center, Chat, Match };
+import Notification, {
+  associations as notificationAssociations,
+  table as notificationTable,
+} from './notification.model';
+
+export { City, Country, User, Center, Chat, Match, Notification };
 
 export const tables = [
   countryTable,
@@ -37,6 +42,7 @@ export const tables = [
   centerTable,
   chatTable,
   matchTable,
+  notificationTable,
 ];
 
 export const associations = [
@@ -46,4 +52,5 @@ export const associations = [
   centerAssociations,
   chatAssociations,
   matchAssociations,
+  notificationAssociations,
 ];

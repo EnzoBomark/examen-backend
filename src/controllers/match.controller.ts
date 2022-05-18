@@ -50,7 +50,7 @@ const postMatch = async (req: Req<Auth, Body<Match>>, res: Res<Match>) => {
   const { auth, body } = req;
 
   try {
-    const instance = await database.transaction(async (transaction) => {
+    const match = await database.transaction(async (transaction) => {
       const T = await Match.create(
         pick(
           body,
@@ -102,12 +102,65 @@ const postMatch = async (req: Req<Auth, Body<Match>>, res: Res<Match>) => {
       return T;
     });
 
-    const match = await findOrFail(Match, {
-      where: { id: instance.getDataValue('id') },
+    const chat = await match.getChat({ include: { all: true } });
+
+    const messages: {
+      key: string | null;
+      uid: string;
+      message: string;
+      time: string;
+    }[] = [];
+
+    const readStatus: { id: string; isRead: boolean }[] = [];
+
+    if (prod) {
+      const messagesRef = firebase.root
+        .database()
+        .ref(`/chat_rooms/${chat.getDataValue('id')}`);
+
+      const messagesSnapShot = await messagesRef
+        .orderByKey()
+        .limitToLast(1)
+        .once('value');
+
+      messagesSnapShot.forEach((message) => {
+        messages.push({
+          key: message.key,
+          uid: message.val().uid,
+          message: message.val().message,
+          time: message.val().time,
+        });
+      });
+
+      const statusRef = firebase.root
+        .database()
+        .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
+
+      const statusSnapShot = await statusRef.once('value');
+
+      statusSnapShot.forEach((status) => {
+        readStatus.push({
+          id: status.val().uid,
+          isRead: status.val().is_read,
+        });
+      });
+    }
+
+    const chatWithMessages = {
+      ...chat.toJSON(),
+      messages,
+      readStatus,
+    };
+
+    const response = await findOrFail(Match, {
+      where: { id: match.getDataValue('id') },
       include: { all: true },
     });
 
-    return res.status(201).send(match);
+    return res.status(201).send({
+      ...response.toJSON(),
+      chat: chatWithMessages,
+    } as unknown as Match);
   } catch (err) {
     return throwError('Cannot create match', err);
   }

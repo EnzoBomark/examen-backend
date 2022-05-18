@@ -1,8 +1,8 @@
 import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
 import { uuid } from '../utils';
-import { Center, City, Match, Chat } from '.';
-import { BelongsTo, BelongsToMany } from '../types';
+import { Center, City, Match, Chat, Notification } from '.';
+import { BelongsTo, BelongsToMany, HasMany } from '../types';
 import {
   usersCenters,
   usersChats,
@@ -36,6 +36,8 @@ interface User
     BelongsToMany<'matches', Match>,
     BelongsToMany<'chats', Chat>,
     BelongsToMany<'cities', City>,
+    HasMany<'sendNotices', Notification>,
+    HasMany<'notifications', Notification>,
     BelongsTo<'city', City>,
     CreationDates {}
 
@@ -135,6 +137,18 @@ export const associations = () => {
     through: usersChats,
     foreignKey: 'userId',
     as: 'chats',
+  });
+
+  User.hasMany(Notification, {
+    foreignKey: 'senderId',
+    onDelete: 'cascade',
+    as: 'sendNotices',
+  });
+
+  User.hasMany(Notification, {
+    foreignKey: 'receiverId',
+    onDelete: 'cascade',
+    as: 'notifications',
   });
 
   User.belongsTo(City, {

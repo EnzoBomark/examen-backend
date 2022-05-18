@@ -1,9 +1,9 @@
 import { Model, Optional, DataTypes, Sequelize } from 'sequelize';
 
 import { uuid } from '../utils';
-import { User, Center, Chat } from '.';
+import { User, Center, Chat, Notification } from '.';
 import { usersMatches } from '../pivots';
-import { BelongsTo, BelongsToMany, HasOne } from '../types';
+import { BelongsTo, BelongsToMany, HasMany, HasOne } from '../types';
 
 interface Attributes {
   id: string;
@@ -29,9 +29,10 @@ class Match
 
 interface Match
   extends Attributes,
+    BelongsToMany<'users', User>,
+    HasMany<'notifications', Notification>,
     BelongsTo<'center', Center>,
     HasOne<'chat', Chat>,
-    BelongsToMany<'users', User>,
     CreationDates {}
 
 export const table = async (sequelize: Sequelize) => {
@@ -119,6 +120,17 @@ export const table = async (sequelize: Sequelize) => {
 };
 
 export const associations = () => {
+  Match.belongsToMany(User, {
+    through: usersMatches,
+    foreignKey: 'matchId',
+    as: 'users',
+  });
+
+  Match.hasMany(Notification, {
+    onDelete: 'cascade',
+    as: 'notifications',
+  });
+
   Match.belongsTo(Center, {
     foreignKey: 'centerId',
     as: 'center',
@@ -128,12 +140,6 @@ export const associations = () => {
     onDelete: 'cascade',
     foreignKey: 'matchId',
     as: 'chat',
-  });
-
-  Match.belongsToMany(User, {
-    through: usersMatches,
-    foreignKey: 'matchId',
-    as: 'users',
   });
 };
 
