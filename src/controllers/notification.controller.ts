@@ -2,7 +2,7 @@ import { Match, Notification, User } from '../models';
 import { throwError } from '../middleware';
 import { findOrFail } from '../services';
 import database from '../database';
-import { Auth, Body, Param, Req, Res } from '../types';
+import { Auth, Body, Req, Res } from '../types';
 
 const postFollowNotification = async (
   req: Req<Auth, Body<Notification>>,
@@ -123,21 +123,24 @@ const postResultNotification = async (
   }
 };
 
-const putNotificationReadStatus = async (
-  req: Req<Param>,
-  res: Res<Notification>
+const putNotificationsReadStatus = async (
+  req: Req<Auth>,
+  res: Res<Notification[]>
 ) => {
-  const { params } = req;
+  const { auth } = req;
 
   try {
-    const notification = await findOrFail(Notification, {
-      where: { id: params.id },
-      include: { all: true },
+    const profile = await findOrFail(User, { where: { id: auth.uid } });
+
+    const notifications = await profile.getNotifications({
+      where: { isRead: false },
     });
 
-    await notification.update({ isRead: true });
+    await Promise.all(
+      notifications.map((notification) => notification.update({ isRead: true }))
+    );
 
-    return res.status(200).send(notification);
+    return res.status(200).send(notifications);
   } catch (err) {
     return throwError('Cannot update notification', err);
   }
@@ -147,7 +150,7 @@ const notification = {
   postFollowNotification,
   postInviteNotification,
   postResultNotification,
-  putNotificationReadStatus,
+  putNotificationsReadStatus,
 };
 
 export default notification;

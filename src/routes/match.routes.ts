@@ -12,6 +12,8 @@ router.post('/match', cont.postMatch);
 
 router.put('/match/:id', cont.putMatch);
 
+router.put('/match/:id/kick/:userId', cont.putKickMatchPlayer);
+
 router.delete('/match/:id', cont.deleteMatch);
 
 export default router;

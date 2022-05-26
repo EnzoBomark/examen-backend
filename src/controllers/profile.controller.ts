@@ -31,7 +31,7 @@ const getProfileNotifications = async (
     const profile = await findOrFail(User, { where: { id: auth.uid } });
 
     const notifications = await profile.getNotifications(
-      association({}, query.page, query.pageSize)
+      association({ include: { all: true } }, query.page, query.pageSize)
     );
 
     return res.status(200).send(notifications);

@@ -6,7 +6,7 @@ export const up = async (knex: Knex): Promise<void> => {
     (table: Knex.TableBuilder) => {
       table.uuid('id').primary().notNullable().unique();
       table.enum('type', ['follow', 'result', 'invite']).notNullable();
-      table.string('is_read').notNullable();
+      table.boolean('is_read').notNullable();
       table
         .string('sender_id')
         .nullable()

@@ -1,6 +1,7 @@
 import { conflict } from '@hapi/boom';
+import { Op } from 'sequelize';
 import { Auth, Body, Ids, Param, Query, Req, Res } from '../types';
-import { Center, Chat, Match, User } from '../models';
+import { Center, Chat, Match, User, Notification } from '../models';
 import { throwError } from '../middleware';
 import { clean, pagination, pick } from '../utils';
 import { findOrFail } from '../services';
@@ -24,7 +25,7 @@ const getMatch = async (req: Req<Param>, res: Res<Match>) => {
 };
 
 const getMatches = async (
-  req: Req<Query<{ matchIds: Ids }>>,
+  req: Req<Query<{ matchIds: Ids; name: string }>>,
   res: Res<ReadonlyArray<Match>>
 ) => {
   const { query } = req;
@@ -34,7 +35,18 @@ const getMatches = async (
       Match,
       {
         where: clean({ id: query.matchIds }),
-        include: { all: true },
+        include: [
+          { model: User, as: 'users' },
+          { model: Notification, as: 'notifications' },
+          {
+            model: Center,
+            as: 'center',
+            where: {
+              name: { [Op.iLike]: `%${query.name || ''}%` },
+            },
+          },
+          { model: Chat, as: 'chat' },
+        ],
       },
       query.page,
       query.pageSize
@@ -167,13 +179,22 @@ const postMatch = async (req: Req<Auth, Body<Match>>, res: Res<Match>) => {
 };
 
 const putMatch = async (
-  req: Req<Param, Body<Partial<Match>>>,
+  req: Req<Auth, Param, Body<Partial<Match>>>,
   res: Res<Match>
 ) => {
-  const { params, body } = req;
+  const { auth, params, body } = req;
 
   try {
     const match = await findOrFail(Match, { where: { id: params.id } });
+
+    const users = (await match.getUsers()) as Array<
+      User & { usersMatches: { isAdmin: boolean; userId: string } }
+    >;
+
+    const matchUserInfo = users.find((u) => u.usersMatches.userId === auth.uid);
+
+    if (!matchUserInfo || !matchUserInfo.usersMatches.isAdmin)
+      throw conflict('You are not the admin of this match');
 
     if (body.centerId) {
       const center = await findOrFail(Center, {
@@ -209,6 +230,50 @@ const putMatch = async (
     return res.status(200).send(response);
   } catch (err) {
     return throwError('Cannot update match', err);
+  }
+};
+
+const putKickMatchPlayer = async (
+  req: Req<Auth, Param<{ userId: string }>>,
+  res: Res<Match>
+) => {
+  const { auth, params } = req;
+
+  try {
+    const match = await findOrFail(Match, { where: { id: params.id } });
+
+    const player = await findOrFail(User, { where: { id: params.userId } });
+
+    const users = (await match.getUsers()) as Array<
+      User & { usersMatches: { isAdmin: boolean; userId: string } }
+    >;
+
+    const matchUserInfo = users.find((u) => u.usersMatches.userId === auth.uid);
+
+    if (!matchUserInfo || !matchUserInfo.usersMatches.isAdmin)
+      throw conflict('You are not the admin of this match');
+
+    await database.transaction(async (transaction) => {
+      const chat = await match.getChat();
+
+      await player.removeChats([chat], { transaction });
+
+      await player.removeMatches([match], { transaction });
+
+      const statusRef = firebase.root
+        .database()
+        .ref(`/chat_rooms_status/${chat.getDataValue('id')}`);
+
+      statusRef.once('value', (chatUsers) => {
+        chatUsers.forEach((user) => {
+          if (user.val().uid === auth.uid) user.ref.remove();
+        });
+      });
+    });
+
+    return res.status(200).send(match);
+  } catch (err) {
+    return throwError('Cannot delete match', err);
   }
 };
 
@@ -250,6 +315,7 @@ const match = {
   getMatches,
   postMatch,
   putMatch,
+  putKickMatchPlayer,
   deleteMatch,
 };
 

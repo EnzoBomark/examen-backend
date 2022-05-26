@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import { Auth, Ids, Param, Query, Req, Res } from '../types';
 import { throwError } from '../middleware';
-import { Center, City, Match, User } from '../models';
+import { Center, Chat, City, Match, User, Notification } from '../models';
 import { findOrFail } from '../services';
 import { association, clean, pagination } from '../utils';
 
@@ -68,7 +68,10 @@ const getUsers = async (
   }
 };
 
-const getUserHistory = async (req: Req<Param, Query>, res: Res<Match[]>) => {
+const getUserHistory = async (
+  req: Req<Param, Query<{ name: string }>>,
+  res: Res<Match[]>
+) => {
   const { params, query } = req;
 
   try {
@@ -79,14 +82,16 @@ const getUserHistory = async (req: Req<Param, Query>, res: Res<Match[]>) => {
         {
           where: { isPlayed: true },
           include: [
+            { model: User, as: 'users' },
+            { model: Notification, as: 'notifications' },
             {
-              as: 'users',
-              model: User,
-            },
-            {
-              as: 'center',
               model: Center,
+              as: 'center',
+              where: {
+                name: { [Op.iLike]: `%${query.name || ''}%` },
+              },
             },
+            { model: Chat, as: 'chat' },
           ],
         },
         query.page,
@@ -119,7 +124,10 @@ const getUserHistoryCount = async (
   }
 };
 
-const getUserUpcoming = async (req: Req<Param, Query>, res: Res<Match[]>) => {
+const getUserUpcoming = async (
+  req: Req<Param, Query<{ name: string }>>,
+  res: Res<Match[]>
+) => {
   const { params, query } = req;
 
   try {
@@ -130,14 +138,16 @@ const getUserUpcoming = async (req: Req<Param, Query>, res: Res<Match[]>) => {
         {
           where: { isPlayed: false },
           include: [
+            { model: User, as: 'users' },
+            { model: Notification, as: 'notifications' },
             {
-              as: 'users',
-              model: User,
-            },
-            {
-              as: 'center',
               model: Center,
+              as: 'center',
+              where: {
+                name: { [Op.iLike]: `%${query.name || ''}%` },
+              },
             },
+            { model: Chat, as: 'chat' },
           ],
         },
         query.page,
@@ -161,7 +171,7 @@ const getUserUpcomingCount = async (
     const user = await findOrFail(User, { where: { id: params.id } });
 
     const count = await user.countMatches({
-      where: { isPlayed: true },
+      where: { isPlayed: false },
     });
 
     return res.status(200).send({ count });
@@ -191,10 +201,6 @@ const getUserWinRate = async (
             {
               as: 'users',
               model: User,
-            },
-            {
-              as: 'center',
-              model: Center,
             },
           ],
         },

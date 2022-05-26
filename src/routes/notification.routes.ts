@@ -10,6 +10,6 @@ router.post('/notification/invite', controllers.postInviteNotification);
 
 router.post('/notification/result', controllers.postResultNotification);
 
-router.put('/notification/status/:id/:', controllers.putNotificationReadStatus);
+router.put('/notifications/status', controllers.putNotificationsReadStatus);
 
 export default router;
