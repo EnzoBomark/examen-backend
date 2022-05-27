@@ -35,4 +35,5 @@ jobs:
       - name: Run Jest
         run: yarn test:unit
         env:
+          NODE_ENV: 'test'
           DATABASE_URL: postgres://postgres:postgres@postgres:5432/tests

@@ -1,6 +1,5 @@
-import { BelongsTo } from './belongs-to';
-import { BelongsToMany } from './belongs-to-many';
-import { HasOne } from './has-one';
-import { HasMany } from './has-many';
-
-export type { BelongsTo, BelongsToMany, HasOne, HasMany };
+export type { Auth, Body, Param, Query, Req, Res, Id, Ids } from './express';
+export type { BelongsTo } from './belongs-to';
+export type { BelongsToMany } from './belongs-to-many';
+export type { HasOne } from './has-one';
+export type { HasMany } from './has-many';

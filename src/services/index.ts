@@ -1,4 +1,5 @@
 import findOrFail from './find-or-fail';
+import chatExists from './chat-exists';
+import cloudMessage from './cloud-message';
 
-// eslint-disable-next-line import/prefer-default-export
-export { findOrFail };
+export { findOrFail, chatExists, cloudMessage };

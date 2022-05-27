@@ -1,17 +1,16 @@
+import { Body, Ids, Param, Query, Req, Res } from '../types';
 import { Country } from '../models';
 import { throwError } from '../middleware';
 import { clean, pagination, pick } from '../utils';
 import { findOrFail } from '../services';
 
-const getCountry = async (req: Req<param>, res: Res<Country>) => {
+const getCountry = async (req: Req<Param>, res: Res<Country>) => {
   const { params } = req;
 
   try {
-    const country = await findOrFail(
-      Country.findOne({
-        where: { id: params.id },
-      })
-    );
+    const country = await findOrFail(Country, {
+      where: { id: params.id },
+    });
 
     return res.status(200).send(country);
   } catch (err) {
@@ -20,19 +19,19 @@ const getCountry = async (req: Req<param>, res: Res<Country>) => {
 };
 
 const getCountries = async (
-  req: Req<query<{ countryIds: Ids }>>,
+  req: Req<Query<{ countryIds: Ids }>>,
   res: Res<ReadonlyArray<Country>>
 ) => {
   const { query } = req;
 
   try {
-    const countries = await Country.findAll(
-      pagination(
-        {
-          where: clean({ id: query.countryIds }),
-        },
-        { page: query.page, pageSize: query.page }
-      )
+    const countries = await pagination(
+      Country,
+      {
+        where: clean({ id: query.countryIds }),
+      },
+      query.page,
+      query.pageSize
     );
 
     return res.status(200).send(countries);
@@ -41,7 +40,7 @@ const getCountries = async (
   }
 };
 
-const postCountry = async (req: Req<body<Country>>, res: Res<Country>) => {
+const postCountry = async (req: Req<Body<Country>>, res: Res<Country>) => {
   const { body } = req;
 
   try {
@@ -54,17 +53,15 @@ const postCountry = async (req: Req<body<Country>>, res: Res<Country>) => {
 };
 
 const putCountry = async (
-  req: Req<param, body<Partial<Country>>>,
+  req: Req<Param, Body<Partial<Country>>>,
   res: Res<Country>
 ) => {
   const { params, body } = req;
 
   try {
-    const country = await findOrFail(
-      Country.findOne({
-        where: { id: params.id },
-      })
-    );
+    const country = await findOrFail(Country, {
+      where: { id: params.id },
+    });
 
     await country.update(pick(body, 'name'));
 
@@ -74,15 +71,13 @@ const putCountry = async (
   }
 };
 
-const deleteCountry = async (req: Req<param>, res: Res<string>) => {
+const deleteCountry = async (req: Req<Param>, res: Res<string>) => {
   const { params } = req;
 
   try {
-    const country = await findOrFail(
-      Country.findOne({
-        where: { id: params.id },
-      })
-    );
+    const country = await findOrFail(Country, {
+      where: { id: params.id },
+    });
 
     await country.destroy();
 
